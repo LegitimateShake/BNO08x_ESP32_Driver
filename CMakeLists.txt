@@ -1,0 +1,12 @@
+idf_component_register(
+    SRCS
+        "src/shtp.cpp"
+        "src/sh2.cpp"
+        "src/bno_parser.cpp"
+        "src/bno086.cpp"
+    INCLUDE_DIRS
+        "include"
+    REQUIRES
+        esp_driver_i2c
+        esp_driver_gpio
+)
