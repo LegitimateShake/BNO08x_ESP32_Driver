@@ -36,8 +36,7 @@ enum class bno_err_t : uint16_t {
     SH2_INVALID_CONTROL_ID                = 404,
     BNO_INVALID_SENSOR_ID                 = 500,
     BNO_TIMEOUT                           = 501,
-    BNO_CALIBRATION_COULD_NOT_BE_STARTED  = 502,
-    BNO_CALIBRATION_ERROR                 = 503,
+    BNO_ME_CONFIGURATION_ERROR            = 502,
     FRS_RECORD_EMPTY                      = 600,
     FRS_NO_DATA_RECEIVED                  = 601,
     FRS_TRANSFER_ONGOING                  = 602,
@@ -170,6 +169,14 @@ enum class bno_tare_sensor_t : uint8_t {
     AR_VR_STABILIZED_GAME_ROTATION_VECTOR = bno_constants::data::command::tare::sensor::AR_VR_STABILIZED_GAME_ROTATION_VECTOR
 };
 
+enum class bno_oscillator_type_t : uint8_t {
+
+    INTERNAL_OSCILLATOR = bno_constants::data::command::oscillator_type::INTERNAL_OSCILLATOR,
+    EXTERNAL_CRYSTAL    = bno_constants::data::command::oscillator_type::EXTERNAL_CRYSTAL,
+    EXTERNAL_CLOCK      = bno_constants::data::command::oscillator_type::EXTERNAL_CLOCK,
+    UNKNOWN             = bno_constants::data::command::oscillator_type::UNKNOWN
+};
+
 
 struct bno_config_t {
 
@@ -231,6 +238,7 @@ struct quaternion_t {
     float heading_accuracy_estimate = 0.0f;
 };
 
+
 struct accel_gyro_mag_t {
 
     sensor_metadata_t metadata;
@@ -240,6 +248,7 @@ struct accel_gyro_mag_t {
     float z = 0.0f;
 };
 
+
 struct raw_accel_gyro_mag_t {
 
     sensor_metadata_t metadata;
@@ -248,9 +257,10 @@ struct raw_accel_gyro_mag_t {
     int16_t y = 0;
     int16_t z = 0;
 
-    int16_t  temperature = 0;
-    uint32_t timestamp   = 0; // microseconds
+    int16_t  temperature  = 0;
+    uint32_t timestamp_us = 0; // microseconds
 };
+
 
 struct uncalibrated_gyro_mag_t {
 
@@ -265,6 +275,7 @@ struct uncalibrated_gyro_mag_t {
     float bias_z = 0.0f;
 };
 
+
 struct gyro_integrated_rot_vec_t {
 
     float w     = 0.0f;
@@ -277,11 +288,13 @@ struct gyro_integrated_rot_vec_t {
     float vel_z = 0.0f;
 };
 
+
 struct env_sensor_t {
 
     sensor_metadata_t metadata;
     float data;
 };
+
 
 struct stability_classifier_t {
     
@@ -289,17 +302,20 @@ struct stability_classifier_t {
     bno_stablitity_state_t state = bno_stablitity_state_t::UNKNOWN;
 };
 
+
 struct stability_detector_t {
 
     sensor_metadata_t metadata;
     bno_stablitity_state_t state = bno_stablitity_state_t::UNKNOWN;
 };
 
+
 struct significant_motion_detector_t {
 
     sensor_metadata_t metadata;
     bool significant_motion = false;
 };
+
 
 struct tap_detector_t {
 
@@ -325,11 +341,13 @@ struct tap_detector_t {
     int neg_doubleTap_z = 0;
 };
 
+
 struct command_metadata_t {
 
     uint8_t command_sequence_number  = 0;   // The sequence number of the sent command request
     uint8_t response_sequence_number = 0;   // Increments when more than one response is sent for a single request
 };
+
 
 struct command_initialized_t {
 
@@ -337,10 +355,35 @@ struct command_initialized_t {
     bno_intialization_state_t status = bno_intialization_state_t::UNKNOWN;
 };
 
+struct command_oscillator_typte_t {
+
+    command_metadata_t metadata;
+    bno_oscillator_type_t type = bno_oscillator_type_t::UNKNOWN;
+};
+
+struct me_calibration_config_t {
+
+    bool accel_calibration_enabled        = true;
+    bool gyro_calibration_enabled         = false;
+    bool mag_calibration_enabled          = true;
+    bool planar_accel_calibration_enabled = false;  
+    bool on_table_calibration_enabled     = true;
+};
+
+struct command_me_calibration_config_t {
+
+    command_metadata_t metadata;
+    me_calibration_config_t config;
+    bool configuration_successful = false;
+};
+
+
 struct bno_command_data_t {
 
     uint8_t sequence_number = 0;
     command_initialized_t initialized;
+    command_me_calibration_config_t me_calibration;
+    command_oscillator_typte_t oscillator;
 };
 
 struct bno_product_id_t {

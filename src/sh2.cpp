@@ -518,3 +518,37 @@ bno_err_t SH2::send_command_set_reorientation(float w, float x, float y, float z
 
     return send_command_request(bno_constants::command::TARE.id, tare_parameters, bno_constants::command::COMMAND_PARAMETER_AMOUNT);
 }
+
+bno_err_t SH2::send_command_get_me_calibration() {
+
+    namespace offset     = bno_constants::data_offset::config::command::me_calibration;
+    namespace subcommand = bno_constants::command::subcommand::me_calibration;
+
+    uint8_t parameters[bno_constants::command::COMMAND_PARAMETER_AMOUNT] = {0x00};
+
+    parameters[offset::P_SUBCOMMAND] = subcommand::GET_ME_CALIBRATION;
+
+    return send_command_request(bno_constants::command::ME_CALIBRATION.id, parameters, bno_constants::command::COMMAND_PARAMETER_AMOUNT);
+}
+
+bno_err_t SH2::send_command_configure_me_calibration(const me_calibration_config_t& config) {
+
+    namespace offset     = bno_constants::data_offset::config::command::me_calibration;
+    namespace subcommand = bno_constants::command::subcommand::me_calibration;
+
+    uint8_t parameters[bno_constants::command::COMMAND_PARAMETER_AMOUNT] = {0x00};
+
+    parameters[offset::P_ACCEL_CAL_ENABLE]        = (uint8_t)config.accel_calibration_enabled;
+    parameters[offset::P_GYRO_CAL_ENABLE]         = (uint8_t)config.gyro_calibration_enabled;
+    parameters[offset::P_MAG_CAL_ENABLE]          = (uint8_t)config.mag_calibration_enabled;
+    parameters[offset::P_SUBCOMMAND]              = subcommand::CONFIGURE_ME_CALIBRATION;
+    parameters[offset::P_PLANAR_ACCEL_CAL_ENABLE] = (uint8_t)config.planar_accel_calibration_enabled;
+    parameters[offset::P_ON_TABLE_CAL_ENABLE]     = (uint8_t)config.on_table_calibration_enabled;
+
+    return send_command_request(bno_constants::command::ME_CALIBRATION.id, parameters, bno_constants::command::COMMAND_PARAMETER_AMOUNT);
+}
+
+bno_err_t SH2::send_command_get_oscillator_type() {
+
+    return send_command_request(bno_constants::command::OSCILLATOR.id, nullptr, 0);
+}

@@ -496,3 +496,53 @@ bno_err_t BNO08x::set_reorientation(float w, float x, float y, float z) {
     return _SH2.send_command_set_reorientation(w,x,y,z);
 }
 
+bno_err_t BNO08x::read_motion_engine_calibration_config(me_calibration_config_t& dest, TickType_t ticks_to_timeout) {
+
+    namespace mask = bno_constants::bitmask_config;
+    bno_err_t sc;
+
+    _SH2.clear_config_mask(mask::COMMAND_ME_CALIBRATION_RESPONSE);
+
+    sc = _SH2.send_command_get_me_calibration();
+    if(sc != bno_err_t::OK)
+        return sc;
+
+    return _SH2.get_config_packet(mask::COMMAND_ME_CALIBRATION_RESPONSE, _SH2.storage().command.me_calibration.config, dest, ticks_to_timeout);
+}
+
+bno_err_t BNO08x::set_motion_engine_calibration_configuration(const me_calibration_config_t config, TickType_t ticks_to_timeout) {
+
+    namespace mask = bno_constants::bitmask_config;
+    bno_err_t sc;
+
+    _SH2.clear_config_mask(mask::COMMAND_ME_CALIBRATION_RESPONSE);
+
+    sc = _SH2.send_command_configure_me_calibration(config);
+    if(sc != bno_err_t::OK)
+        return sc;
+
+    bool success;
+
+    sc = _SH2.get_config_packet(mask::COMMAND_ME_CALIBRATION_RESPONSE, _SH2.storage().command.me_calibration.configuration_successful, success, ticks_to_timeout);
+    if(sc != bno_err_t::OK)
+        return sc;
+
+    if(success)
+        return bno_err_t::OK;
+    else 
+        return bno_err_t::BNO_ME_CONFIGURATION_ERROR;
+}
+
+bno_err_t BNO08x::read_oscillator_type(bno_oscillator_type_t& dest, TickType_t ticks_to_timeout) {
+
+    namespace mask = bno_constants::bitmask_config;
+    bno_err_t sc;
+
+    _SH2.clear_config_mask(mask::COMMAND_OSCILLATOR_TYPE_RESPONSE);
+
+    sc = _SH2.send_command_get_oscillator_type();
+    if(sc != bno_err_t::OK)
+        return sc;
+
+    return _SH2.get_config_packet(mask::COMMAND_OSCILLATOR_TYPE_RESPONSE, _SH2.storage().command.oscillator.type, dest, ticks_to_timeout);
+}

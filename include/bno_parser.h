@@ -66,6 +66,10 @@ class bno_parser {
 
                 bno_err_t parse_command_initialize(command_initialized_t& dest, uint8_t report_length);
 
+                bno_err_t parse_command_me_calibration_response(command_me_calibration_config_t& dest, uint8_t report_length);
+
+                bno_err_t parse_command_get_oscillator_type_response(command_oscillator_typte_t& dest, uint8_t report_length);
+
             bno_err_t parse_frs_write_response(bno_frs_write_response_t& dest, uint8_t report_length);
 
             bno_err_t parse_frs_read_response(bno_frs_read_response_t& dest, uint8_t report_length);

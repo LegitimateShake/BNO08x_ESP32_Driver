@@ -132,6 +132,28 @@ bno_err_t send_command_set_reorientation(float w, float x, float y, float z);
 
 
 /**
+ * @brief Request the current motion engine calibration configuration from the sensor
+ * @return bno_err_t status code. `bno_err_t::OK` on success
+ */
+bno_err_t send_command_get_me_calibration();
+
+
+/**
+ * @brief Configures which parts of the motion engine calibration system should be turned on/off
+ * @param config The configuration that should be sent to the sensor. 
+ * @return bno_err_t status code. `bno_err_t::OK` on success
+ */
+bno_err_t send_command_configure_me_calibration(const me_calibration_config_t& config);
+
+
+/**
+ * @brief Request information on what kind of oscillator the sensor is using 
+ * @return bno_err_t status code. `bno_err_t::OK` on success
+ */
+bno_err_t send_command_get_oscillator_type();
+
+
+/**
  * @brief Set a feature command. This enables and disables sensor outputs
  * @param config Filled configuration struct for the sensor
  * @return bno_err_t status code. `bno_err_t::OK` on success

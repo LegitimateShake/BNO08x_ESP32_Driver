@@ -337,7 +337,7 @@ bno_err_t bno_parser::parse_raw_accel_gyro_mag(raw_accel_gyro_mag_t& dest, uint8
         dest.temperature = read_int16_t(&data[offset::accel_gyro_mag::RAW_GYRO_TEMP]);
     }
 
-    dest.timestamp = read_uint32_t(&data[offset::accel_gyro_mag::RAW_IMESTAMP]);
+    dest.timestamp_us = read_uint32_t(&data[offset::accel_gyro_mag::RAW_IMESTAMP]);
 
     return bno_err_t::OK;
 }
@@ -580,7 +580,12 @@ bno_err_t bno_parser::parse_command_response() {
     case command::TURNTABLE_CALIBRATION.id:
         // This one seems to not be supported by the bno08x
         break;
-
+    case command::ME_CALIBRATION.id:
+        sc = parse_command_me_calibration_response(_storage->command.me_calibration, command::ME_CALIBRATION.report_length);
+        break;
+    case command::OSCILLATOR.id:
+        sc = parse_command_get_oscillator_type_response(_storage->command.oscillator, command::OSCILLATOR.report_length);
+        break;
     default:
         sc = bno_err_t::SH2_INVALID_COMMAND_ID;
     }
@@ -611,6 +616,44 @@ bno_err_t bno_parser::parse_command_initialize(command_initialized_t& dest, uint
 
     return bno_err_t::OK;
 }
+
+bno_err_t bno_parser::parse_command_me_calibration_response(command_me_calibration_config_t& dest, uint8_t report_length) {
+
+    namespace offset = bno_constants::data_offset::config::command::me_calibration;
+
+    if(_rx_packet->size < report_length)
+        return bno_err_t::SH2_INVALID_REPORT_LENGTH;
+
+    _data_access->sensor_config().set_mask_and_lock(bno_constants::bitmask_config::COMMAND_ME_CALIBRATION_RESPONSE);
+    parse_command_metadata(dest.metadata);
+
+    const uint8_t* data = _rx_packet->data;
+
+    dest.configuration_successful                = !data[offset::R_STATUS];
+    dest.config.accel_calibration_enabled        = data[offset::R_ACCEL_CAL_ENABLE];
+    dest.config.gyro_calibration_enabled         = data[offset::R_GYRO_CAL_ENABLE];
+    dest.config.mag_calibration_enabled          = data[offset::R_MAG_CAL_ENABLE];
+    dest.config.planar_accel_calibration_enabled = data[offset::R_PLANAR_ACCEL_CAL_ENABLE];
+    dest.config.on_table_calibration_enabled     = data[offset::R_ON_TABLE_CAL_ENABLE];
+
+    return bno_err_t::OK;
+}
+
+bno_err_t bno_parser::parse_command_get_oscillator_type_response(command_oscillator_typte_t& dest, uint8_t report_length) {
+
+    namespace offset = bno_constants::data_offset::config::command::oscillator;
+
+    if(_rx_packet->size < report_length)
+        return bno_err_t::SH2_INVALID_REPORT_LENGTH;
+
+    _data_access->sensor_config().set_mask_and_lock(bno_constants::bitmask_config::COMMAND_OSCILLATOR_TYPE_RESPONSE);
+    parse_command_metadata(dest.metadata);
+
+    dest.type = (bno_oscillator_type_t )_rx_packet->data[offset::R_TYPE];
+
+    return bno_err_t::OK;
+}
+
 
 bno_err_t bno_parser::parse_advertisement_package() {
     

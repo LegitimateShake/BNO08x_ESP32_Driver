@@ -113,12 +113,12 @@ namespace bno_constants
     {
         static constexpr sh2_command_t ERRORS                      = {.id=0x01, .report_length=0};
         static constexpr sh2_command_t COUNTER                     = {.id=0x02, .report_length=0};
-        static constexpr sh2_command_t TARE                        = {.id=0x03, .report_length=0};
+        static constexpr sh2_command_t TARE                        = {.id=0x03, .report_length=0}; // Does not return anything
         static constexpr sh2_command_t INITIALIZE                  = {.id=0x04, .report_length=20};
         static constexpr sh2_command_t DCD                         = {.id=0x06, .report_length=0};
-        static constexpr sh2_command_t ME_CALIBRATION              = {.id=0x07, .report_length=0};
+        static constexpr sh2_command_t ME_CALIBRATION              = {.id=0x07, .report_length=20};
         static constexpr sh2_command_t DCD_PERIODIC_SAVE           = {.id=0x09, .report_length=0};
-        static constexpr sh2_command_t OSCILLATOR                  = {.id=0x0A, .report_length=0};
+        static constexpr sh2_command_t OSCILLATOR                  = {.id=0x0A, .report_length=20};
         static constexpr sh2_command_t CLEAR_DCD_RESET             = {.id=0x0B, .report_length=0};
         static constexpr sh2_command_t TURNTABLE_CALIBRATION       = {.id=0x0C, .report_length=0}; // Not supported
         static constexpr sh2_command_t BOOTLOADER                  = {.id=0x0D, .report_length=0};
@@ -134,6 +134,13 @@ namespace bno_constants
                 static constexpr uint8_t PERSIST_TARE      = 0x01;
                 static constexpr uint8_t SET_REORIENTATION = 0x02;
             }
+
+            namespace me_calibration
+            {
+                static constexpr uint8_t CONFIGURE_ME_CALIBRATION = 0x00;
+                static constexpr uint8_t GET_ME_CALIBRATION       = 0x01;
+            }
+
         }
     }
 
@@ -236,6 +243,8 @@ namespace bno_constants
         static constexpr uint64_t FRS_READ_COMPLETE                      = (uint64_t)1 << 4;
         static constexpr uint64_t FRS_WRITE_RESPONSE                     = (uint64_t)1 << 5;
         static constexpr uint64_t PRODUCT_ID_RESPONSE                    = (uint64_t)1 << 6;
+        static constexpr uint64_t COMMAND_ME_CALIBRATION_RESPONSE        = (uint64_t)1 << 7;
+        static constexpr uint64_t COMMAND_OSCILLATOR_TYPE_RESPONSE       = (uint64_t)1 << 8;
     } 
 
     // This bitmap is sent to the sensor (bit positions)
@@ -343,6 +352,15 @@ namespace bno_constants
                 static constexpr uint8_t UNKNOWN          = 0xFF;
             }
 
+            namespace oscillator_type
+            {
+                static constexpr uint8_t INTERNAL_OSCILLATOR = 0x00;
+                static constexpr uint8_t EXTERNAL_CRYSTAL    = 0x01;
+                static constexpr uint8_t EXTERNAL_CLOCK      = 0x02;
+
+                static constexpr uint8_t UNKNOWN          = 0xFF;
+            }
+
             namespace tare
             {
                 namespace axis
@@ -424,9 +442,9 @@ namespace bno_constants
                 }
                 namespace angular_velocity
                 {
-                    static constexpr uint8_t X        =  8;
-                    static constexpr uint8_t Y        = 10;
-                    static constexpr uint8_t Z        = 12;
+                    static constexpr uint8_t X =  8;
+                    static constexpr uint8_t Y = 10;
+                    static constexpr uint8_t Z = 12;
                 }
             }
         }
@@ -490,18 +508,31 @@ namespace bno_constants
                     static constexpr uint8_t P_REORIENTATION_QUATERNION_START = 1;
                 }
 
-                namespace turntable_calibration
-                {
-                    static constexpr uint8_t P_SUBCOMMAND           = 0;
-                    static constexpr uint8_t P_CALIBRATION_INTERVAL = 1;
-                    
-                    static constexpr uint8_t R_SUBCOMMAND = 3;
-                    static constexpr uint8_t R_ERROR_CODE = 4;
-                }   
-
                 namespace initialized
                 {
                     static constexpr uint8_t R_STATUS = 5;
+                }
+
+                namespace oscillator
+                {
+                    static constexpr uint8_t R_TYPE = 5;
+                }
+
+                namespace me_calibration
+                {
+                    static constexpr uint8_t P_ACCEL_CAL_ENABLE        = 0;
+                    static constexpr uint8_t P_GYRO_CAL_ENABLE         = 1;
+                    static constexpr uint8_t P_MAG_CAL_ENABLE          = 2;
+                    static constexpr uint8_t P_SUBCOMMAND              = 3;
+                    static constexpr uint8_t P_PLANAR_ACCEL_CAL_ENABLE = 4;
+                    static constexpr uint8_t P_ON_TABLE_CAL_ENABLE     = 5;
+
+                    static constexpr uint8_t R_STATUS                  = 5;
+                    static constexpr uint8_t R_ACCEL_CAL_ENABLE        = 6;
+                    static constexpr uint8_t R_GYRO_CAL_ENABLE         = 7;
+                    static constexpr uint8_t R_MAG_CAL_ENABLE          = 8;
+                    static constexpr uint8_t R_PLANAR_ACCEL_CAL_ENABLE = 9;
+                    static constexpr uint8_t R_ON_TABLE_CAL_ENABLE     = 10;
                 }
             }
         }

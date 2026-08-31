@@ -37,6 +37,15 @@ public:
 
 public:
 
+
+/**
+ * @brief Initializes the sensor. Must be called before any other communication is possible
+ * @param sensor_config pointer to the sensor configuration. Must be fully filled
+ * @return bno_err_t status code. `bno_err_t::OK` on success
+ */
+bno_err_t begin(bno_config_t* sensor_config);
+
+
 /**
  * @brief Writes calibration values into the flash of the BNO086
  * @param target_temperature The current temperature the sensor should be returning. Units are degrees celsius
@@ -182,11 +191,12 @@ inline bno_err_t exit_sleep()
 
 
 /**
- * @brief Initializes the sensor. Must be called before any other communication is possible
- * @param sensor_config pointer to the sensor configuration. Must be fully filled
+ * @brief Configures which parts of the motion engine calibration system should be turned on/off
+ * @param config The configuration that should be sent to the sensor. 
+ * @param ticks_to_timeout Amount of ticks the function waits for a packet before the read is aborted
  * @return bno_err_t status code. `bno_err_t::OK` on success
  */
-bno_err_t begin(bno_config_t* sensor_config);
+bno_err_t set_motion_engine_calibration_configuration(const me_calibration_config_t config, TickType_t ticks_to_timeout = bno_constants::driver_config::BNO_TICKS_TO_TIMEOUT);
 
 
 /**
@@ -561,5 +571,23 @@ bno_err_t read_sensor_config(bno_sensor_id_t sensor_id, bno_sensor_config_t& des
  * @return bno_err_t status code. `bno_err_t::OK` on success
  */
 bno_err_t read_product_id(bno_product_id_t& dest, TickType_t ticks_to_timeout = bno_constants::driver_config::BNO_TICKS_TO_TIMEOUT);
+
+
+/**
+ * @brief Read the current motion engine calibration configuration of the sensor
+ * @param dest Reference to a struct that should be filled with the motion engine calibration configuration
+ * @param ticks_to_timeout Amount of ticks the function waits for a packet before the read is aborted
+ * @return bno_err_t status code. `bno_err_t::OK` on success
+ */
+bno_err_t read_motion_engine_calibration_config(me_calibration_config_t& dest, TickType_t ticks_to_timeout = bno_constants::driver_config::BNO_TICKS_TO_TIMEOUT);
+
+
+/**
+ * @brief Get the type of oscillator the sensor is using
+ * @param dest Reference to the variable that the type of oscillator should be written to 
+ * @param ticks_to_timeout Amount of ticks the function waits for a packet before the read is aborted 
+ */
+bno_err_t read_oscillator_type(bno_oscillator_type_t& dest, TickType_t ticks_to_timeout = bno_constants::driver_config::BNO_TICKS_TO_TIMEOUT);
+
 };
         
