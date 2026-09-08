@@ -52,7 +52,7 @@ Any configurations that are taken here will persist through power cycles.
 
 ## Status codes
 
-Most method will return a status code after completion. This code indicates if the function call was successful or not. Success is indicated by the code `bno_err_t::OK`. To check the return code of any function call the following non member method can be used:
+Most methods will return a status code after completion. This code indicates if the function call was successful or not. Success is indicated by the code `bno_err_t::OK`. To check the return code of any function call the following non member method can be used:
 > `bno_check_sc()`
 
 By default, this function will block indefinitely if a status code other than `bno_err_t::OK` is returned.
