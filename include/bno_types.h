@@ -319,7 +319,7 @@ struct significant_motion_detector_t {
 struct step_counter_t {
 
     sensor_metadata_t metadata;
-    uint32_t steps = 0;
+    uint16_t steps = 0;
     uint32_t detect_latency_us = 0;
 };
 

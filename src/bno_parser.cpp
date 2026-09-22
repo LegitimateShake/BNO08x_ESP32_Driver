@@ -414,7 +414,7 @@ bno_err_t bno_parser::parse_step_counter(step_counter_t& dest, uint8_t report_le
     _data_access->sensor_data().set_bit_and_lock(_rx_packet->data[offset::metadata::REPORT_ID]);
 
     dest.detect_latency_us = read_uint32_t(&_rx_packet->data[offset::step_counter::DETECT_LATENCY]);
-    dest.steps             = read_uint32_t(&_rx_packet->data[offset::step_counter::STEP_AMOUNT]);
+    dest.steps             = read_uint16_t(&_rx_packet->data[offset::step_counter::STEP_AMOUNT]);
     
     return bno_err_t::OK;
 }
