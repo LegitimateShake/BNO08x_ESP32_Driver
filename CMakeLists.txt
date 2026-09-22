@@ -3,7 +3,7 @@ idf_component_register(
         "src/shtp.cpp"
         "src/sh2.cpp"
         "src/bno_parser.cpp"
-        "src/bno086.cpp"
+        "src/bno08x.cpp"
     INCLUDE_DIRS
         "include"
     REQUIRES
