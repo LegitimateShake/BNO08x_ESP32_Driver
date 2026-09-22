@@ -1,4 +1,4 @@
-#include <bno086.h>
+#include <bno08x.h>
 
 bno_err_t BNO08x::begin(bno_config_t* sensor_config) {
 
