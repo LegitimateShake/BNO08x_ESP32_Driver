@@ -3,7 +3,7 @@
 This repo includes I2C driver code for the BNO086 and was written for the ESP-IDF v6.x.x. 
 It should also work for the BNO085, as they are mostly the same chip.
 The motivation behind this was to write a driver that supports multiple BNO08x at the same time, as this is sadly not the case with the manufacturers driver code.
-The driver is written in **C++** currently only supports communication over **I2C**.
+The driver is written in **C++** and currently only supports communication over **I2C**.
 
 ## Nessecary pin connections:
 - **SCL** (eigther internal or external pullup resistor required)
