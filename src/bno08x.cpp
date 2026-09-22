@@ -57,6 +57,10 @@ bno_sensor_config_t BNO08x::create_sensor_config(bno_sensor_id_t id, uint16_t fr
         .sensor_spesific_config = 0x00,
         .batch_interval = 0x00
     };
+
+    if(id == bno_sensor_id_t::STEP_DETECTOR) 
+        config_sensor_change_sensitivity(config, true, false, 1.0f);
+
     return config;
 }
 
