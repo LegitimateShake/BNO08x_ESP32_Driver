@@ -91,7 +91,8 @@ enum class bno_sensor_id_t : uint8_t {
     STABILITY_CLASSIFIER                  = bno_constants::sensor::STABILITY_CLASSIFIER.id,              
     RAW_ACCELEROMETER                     = bno_constants::sensor::RAW_ACCELEROMETER.id,             
     RAW_GYROSCOPE                         = bno_constants::sensor::RAW_GYROSCOPE.id,          
-    RAW_MAGNETOMETER                      = bno_constants::sensor::RAW_MAGNETOMETER.id,           
+    RAW_MAGNETOMETER                      = bno_constants::sensor::RAW_MAGNETOMETER.id,  
+    STEP_DETECTOR                         = bno_constants::sensor::STEP_DETECTOR.id,         
     SHAKE_DETECTOR                        = bno_constants::sensor::SHAKE_DETECTOR.id,           
     FLIP_DETECTOR                         = bno_constants::sensor::FLIP_DETECTOR.id,           
     PICKUP_DETECTOR                       = bno_constants::sensor::PICKUP_DETECTOR.id,           
@@ -315,6 +316,12 @@ struct significant_motion_detector_t {
     bool significant_motion = false;
 };
 
+struct step_counter_t {
+
+    sensor_metadata_t metadata;
+    uint32_t steps = 0;
+    uint32_t detect_latency_us = 0;
+};
 
 struct tap_detector_t {
 
@@ -417,6 +424,8 @@ struct bno_sensor_data_t {
     significant_motion_detector_t significant_motion_detector;
     stability_classifier_t stablitity_classifier;
     stability_detector_t stability_detector;
+    step_counter_t step_counter;
+    step_counter_t step_detector;
     tap_detector_t tap_counter;
 
     quaternion_t rotation_vector;

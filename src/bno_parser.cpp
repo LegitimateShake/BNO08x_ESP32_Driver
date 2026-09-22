@@ -138,6 +138,7 @@ bno_err_t bno_parser::parse_channel_reports() {
     case sensor::TAP_DETECTOR.id:
         break;
     case sensor::STEP_COUNTER.id:
+        sc = parse_step_counter(_storage->sensor.step_counter, sensor::STEP_COUNTER.report_length);
         break;
     case sensor::SIGNIFICANT_MOTION_DETECTOR.id:
         sc = parse_significant_motion_detector(_storage->sensor.significant_motion_detector, sensor::SIGNIFICANT_MOTION_DETECTOR.report_length);
@@ -153,6 +154,9 @@ bno_err_t bno_parser::parse_channel_reports() {
         break;
     case sensor::RAW_MAGNETOMETER.id:
         sc = parse_raw_accel_gyro_mag(_storage->sensor.raw_magnetometer, sensor::RAW_MAGNETOMETER.report_length);
+        break;
+    case sensor::STEP_DETECTOR.id:
+        sc = parse_step_detector(_storage->sensor.step_detector, sensor::STEP_DETECTOR.report_length);
         break;
     case sensor::SHAKE_DETECTOR.id:
         break;
@@ -396,6 +400,36 @@ bno_err_t bno_parser::parse_significant_motion_detector(significant_motion_detec
     _data_access->sensor_data().set_bit_and_lock(_rx_packet->data[offset::metadata::REPORT_ID]);
 
     dest.significant_motion = bool(read_uint16_t(&_rx_packet->data[offset::generic::SENSOR_DATA_START]));
+
+    return bno_err_t::OK;
+}
+
+bno_err_t bno_parser::parse_step_counter(step_counter_t& dest, uint8_t report_length) {
+
+    namespace offset = bno_constants::data_offset::report;
+
+    if(_rx_packet->size < report_length)
+        return bno_err_t::SH2_INVALID_REPORT_LENGTH;
+
+    _data_access->sensor_data().set_bit_and_lock(_rx_packet->data[offset::metadata::REPORT_ID]);
+
+    dest.detect_latency_us = read_uint32_t(&_rx_packet->data[offset::step_counter::DETECT_LATENCY]);
+    dest.steps             = read_uint32_t(&_rx_packet->data[offset::step_counter::STEP_AMOUNT]);
+    
+    return bno_err_t::OK;
+}
+
+bno_err_t bno_parser::parse_step_detector(step_counter_t& dest, uint8_t report_length) {
+
+    namespace offset = bno_constants::data_offset::report;
+
+    if(_rx_packet->size < report_length)
+        return bno_err_t::SH2_INVALID_REPORT_LENGTH;
+
+    _data_access->sensor_data().set_bit_and_lock(_rx_packet->data[offset::metadata::REPORT_ID]);
+
+    dest.detect_latency_us = read_uint32_t(&_rx_packet->data[offset::step_counter::DETECT_LATENCY]);
+    dest.steps = 1;
 
     return bno_err_t::OK;
 }

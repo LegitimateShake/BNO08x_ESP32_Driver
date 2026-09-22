@@ -551,6 +551,34 @@ inline bno_err_t read_significant_motion_detector(significant_motion_detector_t&
 
 
 /**
+ * @brief Get the amount of steps the bno08x counted internally since the step counter was enabled.
+ * @brief The internal counter of the bno08x is an uint16_t counter and wraps around after ~65k steps.
+ * @brief These reports arrive continuously, regardless of change in step count.
+ * @param dest Reference to a struct that should be filled with the sensor data
+ * @param ticks_to_timeout Amount of ticks the function waits for a packet before the read is aborted
+ * @return bno_err_t status code. `bno_err_t::OK` on success
+ */
+inline bno_err_t read_step_counter(step_counter_t& dest, TickType_t ticks_to_timeout = bno_constants::driver_config::BNO_TICKS_TO_TIMEOUT)
+{
+    return _SH2.get_sensor_data_packet(bno_constants::sensor::STEP_COUNTER.id, _SH2.storage().sensor.step_counter, dest, ticks_to_timeout);
+}
+
+
+/**
+ * @brief The step detector reports steps detected. Each report indicates a single step. 
+ * @brief The counter is not representative of the total amount of steps that were taken.
+ * @brief By default, this function blocks until the step notification arrives.
+ * @param dest Reference to a struct that should be filled with the sensor data
+ * @param ticks_to_timeout Amount of ticks the function waits for a packet before the read is aborted
+ * @return bno_err_t status code. `bno_err_t::OK` on success 
+ */
+inline bno_err_t read_step_detector(step_counter_t& dest, TickType_t ticks_to_timeout = portMAX_DELAY)
+{
+    return _SH2.get_sensor_data_packet(bno_constants::sensor::STEP_DETECTOR.id, _SH2.storage().sensor.step_detector, dest, ticks_to_timeout);
+}
+
+
+/**
  * @brief Read the current configuration of any sensor
  * @param sensor_id Id of the sensor for which the configuration should be returned
  * @param dest Reference to a struct that should be filled with the sensor configuration

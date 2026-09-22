@@ -98,5 +98,9 @@ class bno_parser {
 
             bno_err_t parse_significant_motion_detector(significant_motion_detector_t& dest, uint8_t report_length);
 
+            bno_err_t parse_step_counter(step_counter_t& dest, uint8_t report_length);
+
+            bno_err_t parse_step_detector(step_counter_t& dest, uint8_t report_length);
+
         bno_err_t parse_channel_gyro();
 };

@@ -429,6 +429,12 @@ namespace bno_constants
                 static constexpr uint8_t RAW_GYRO_TEMP = 15;
                 static constexpr uint8_t RAW_IMESTAMP  = 17;
             }
+
+            namespace step_counter
+            {
+                static constexpr uint8_t DETECT_LATENCY =  9;
+                static constexpr uint8_t STEP_AMOUNT    = 13;
+            }
             
             namespace gyro_integrated_rotation_vector
             {   
