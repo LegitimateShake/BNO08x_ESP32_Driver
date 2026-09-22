@@ -13,7 +13,7 @@ The driver is written in **C++** currently only supports communication over **I2
 
 ## Includes
 
-> `#include <bno086.h>`
+> `#include <bno08x.h>`
 
 ## Environment-Sensor support
 
