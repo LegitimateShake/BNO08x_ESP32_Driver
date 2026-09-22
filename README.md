@@ -64,3 +64,7 @@ Additionally, an error message will be logged over the ESP's serial interface.
 
 This driver utilizes several custom data types. All types, as well as all status codes are defined in `bno_types.h`.
 
+## Calibration
+
+The BNO08x automatically updates its calibration data into the flash of the chip every few seconds. 
+Which calibration data should be updated can be set through the library.
