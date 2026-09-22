@@ -54,7 +54,7 @@ void SH2::task_packet_read() {
 
 SH2::~SH2() {
 
-    if(_rst_pin != bno_constants::driver_config::BNO_PIN_UNDEFINED && _int_pin != bno_constants::driver_config::BNO_PIN_UNDEFINED) {
+    if(_rst_pin != GPIO_NUM_NC && _int_pin != GPIO_NUM_NC) {
 
         gpio_isr_handler_remove(_int_pin);
         gpio_reset_pin(_rst_pin);
@@ -68,15 +68,14 @@ SH2::~SH2() {
         vSemaphoreDelete(_mutexWriteMessage);
 }
 
-bno_err_t SH2::begin(shtp* transport_layer, uint8_t H_INT, uint8_t RST) {
+bno_err_t SH2::begin(shtp* transport_layer, gpio_num_t H_INT, gpio_num_t RST) {
 
     bno_err_t sc;
 
     if(_initialized)
         return bno_err_t::OK;
 
-    if(RST == bno_constants::driver_config::BNO_PIN_UNDEFINED || H_INT == bno_constants::driver_config::BNO_PIN_UNDEFINED ||
-       transport_layer == nullptr) 
+    if(RST == GPIO_NUM_NC || H_INT == GPIO_NUM_NC || transport_layer == nullptr) 
         return bno_err_t::INVALID_INPUT;
     
     _shtp    = transport_layer;
@@ -145,7 +144,7 @@ bno_err_t SH2::begin(shtp* transport_layer, uint8_t H_INT, uint8_t RST) {
     
     // Configure the interrupt
     esp_err_t err = gpio_install_isr_service(0);
-
+    
     if(err != ESP_OK && err != ESP_ERR_INVALID_STATE) {
 
         ESP_LOGE(TAG, "Initialization failed: Interrupt GPIO drivers could not be installed");

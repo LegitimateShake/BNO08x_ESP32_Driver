@@ -84,8 +84,6 @@ class SH2 {
 
 ~SH2();
 
-void set_shtp(shtp* transport_layer);
-
 /**
  * @brief Initialization function. Must be called first to initialize the SH2 object
  * @param transport_layer pointer to the used SHTP implementation
@@ -93,7 +91,7 @@ void set_shtp(shtp* transport_layer);
  * @param RST GPIO that is connected to the sensors reset pin
  * @return bno_err_t status code. `bno_err_t::OK` on success
  */
-bno_err_t begin(shtp* transport_layer, uint8_t H_INT = bno_constants::driver_config::BNO_PIN_UNDEFINED, uint8_t RST = bno_constants::driver_config::BNO_PIN_UNDEFINED);
+bno_err_t begin(shtp* transport_layer, gpio_num_t H_INT = GPIO_NUM_NC, gpio_num_t RST = GPIO_NUM_NC);
 
 
 /**

@@ -50,8 +50,7 @@ enum class bno_err_t : uint16_t {
 
 
 /**
- * @brief Function checks the return code of a BNO08x function call
- * @brief Loggs the error code on error
+ * @brief Function checks the return code of a BNO08x function call and logs the error code on error.
  * @brief Returns if the status code is `bno_err_t::OK`
  * @param tag Information that should be logged in the case of an error
  * @param sc Status Code of any function call
@@ -181,8 +180,8 @@ enum class bno_oscillator_type_t : uint8_t {
 struct bno_config_t {
 
     uint16_t i2c_address                = bno_constants::i2c::DEFAULT_ADDRESS;
-    uint8_t rst                         = bno_constants::driver_config::BNO_PIN_UNDEFINED;
-    uint8_t h_int                       = bno_constants::driver_config::BNO_PIN_UNDEFINED;
+    gpio_num_t rst                      = GPIO_NUM_NC;
+    gpio_num_t h_int                    = GPIO_NUM_NC;
     i2c_master_bus_handle_t* bus_handle = nullptr;
     uint32_t i2c_frequency              = bno_constants::i2c::DEFAULT_CLOCK_SPEED;
 };

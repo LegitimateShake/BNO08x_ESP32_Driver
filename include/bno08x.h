@@ -22,11 +22,7 @@ public:
     shtp _shtp;
     SH2  _SH2;
 
-    i2c_master_bus_handle_t _i2c_bus;
-    i2c_master_bus_config_t _i2c_config;
-
     static constexpr char TAG[] = "BNO08x";
-    bool _shtp_owner  = false;
     bool _initialized = false;
 
     bno_err_t frs_calibrate_env_sensor_temp_hum_pressure(bno_sensor_id_t sensor_id, float target_value, float scale, bool clear_record);

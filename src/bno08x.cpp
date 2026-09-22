@@ -12,9 +12,7 @@ bno_err_t BNO08x::begin(bno_config_t* sensor_config) {
         return bno_err_t::INVALID_INPUT;
     }
 
-    if(sensor_config->bus_handle == nullptr                                     ||
-       sensor_config->h_int == bno_constants::driver_config::BNO_PIN_UNDEFINED  ||
-       sensor_config->rst   == bno_constants::driver_config::BNO_PIN_UNDEFINED  ){
+    if(sensor_config->bus_handle == nullptr || sensor_config->h_int == GPIO_NUM_NC || sensor_config->rst == GPIO_NUM_NC){
 
         ESP_LOGE(TAG, "Initialization failed: Invalid input argument. Error Code %u", bno_err_t::INVALID_INPUT);
         return bno_err_t::INVALID_INPUT;

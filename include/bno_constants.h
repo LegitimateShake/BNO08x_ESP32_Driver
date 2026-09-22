@@ -30,7 +30,6 @@ namespace bno_constants
     {
         static constexpr uint32_t     READ_TASK_STACK_SIZE = 4096;
         static constexpr UBaseType_t  READ_TASK_PRIORITY   =    3;
-        static constexpr uint8_t      BNO_PIN_UNDEFINED    =  255;
         static constexpr uint8_t      BNO_SENSOR_UNDEFINED =    0;
         static constexpr uint8_t      FRS_READ_BUFFER_SIZE =   64;  // Words
         static constexpr TickType_t   BNO_TICKS_TO_TIMEOUT =  pdMS_TO_TICKS(100);
