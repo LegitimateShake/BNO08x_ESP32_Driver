@@ -11,6 +11,8 @@ The driver is written in **C++** and currently only supports communication over 
 - **H_INT** (nessecary for BNO08x interrupts)
 - **RST**   (nessecary for resetting the BNO08x)
 
+These can be connected to any GPIO of the ESP32. The chosen **H_INT** pin however must support interrupts. 
+
 ## Includes
 
 > `#include <bno08x.h>`
