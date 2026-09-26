@@ -196,6 +196,26 @@ bno_err_t set_motion_engine_calibration_configuration(const me_calibration_confi
 
 
 /**
+ * @brief Configures if the sensor should periodically save dynamic calibration data to flash.
+ * @param enable_dynamic_dcd_save Set to `true` to enable, set to `false` to disable
+ * @return bno_err_t status code. `bno_err_t::OK` on success
+ */
+bno_err_t set_periodic_dcd_save(bool enable_dynamic_dcd_save = true)
+{
+    return _SH2.send_command_configure_periodic_dcd_save(enable_dynamic_dcd_save);
+}
+
+
+/**
+ * @brief Stores the current dynamic calibration data into the flash of the sensor.
+ * @brief Any stored calibration data may be overwritten if periodic saving of dcd is enabled.
+ * @param ticks_to_timeout Amount of ticks the function waits for a response before the read is aborted
+ * @return bno_err_t status code. `bno_err_t::OK` on success
+ */
+bno_err_t save_dynamic_calibration_data(TickType_t ticks_to_timeout = bno_constants::driver_config::BNO_TICKS_TO_TIMEOUT);
+
+
+/**
  * @brief Create a configuration struct for a sensor
  * @param id The id of the sensor
  * @param frequency_hz The output frequency of the sensor

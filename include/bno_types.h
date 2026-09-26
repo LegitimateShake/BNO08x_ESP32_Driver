@@ -34,6 +34,7 @@ enum class bno_err_t : uint16_t {
     SH2_INVALID_REPORT_LENGTH             = 402,
     SH2_INVALID_COMMAND_ID                = 403,
     SH2_INVALID_CONTROL_ID                = 404,
+    SH2_OPERATION_FAILED                  = 405,
     BNO_INVALID_SENSOR_ID                 = 500,
     BNO_TIMEOUT                           = 501,
     BNO_ME_CONFIGURATION_ERROR            = 502,
@@ -361,6 +362,12 @@ struct command_initialized_t {
     bno_intialization_state_t status = bno_intialization_state_t::UNKNOWN;
 };
 
+struct command_save_dcd_t {
+
+    command_metadata_t metadata;
+    uint8_t status;
+};
+
 struct command_oscillator_typte_t {
 
     command_metadata_t metadata;
@@ -390,6 +397,7 @@ struct bno_command_data_t {
     command_initialized_t initialized;
     command_me_calibration_config_t me_calibration;
     command_oscillator_typte_t oscillator;
+    command_save_dcd_t save_dcd;
 };
 
 struct bno_product_id_t {

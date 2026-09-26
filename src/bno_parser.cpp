@@ -620,6 +620,9 @@ bno_err_t bno_parser::parse_command_response() {
     case command::OSCILLATOR.id:
         sc = parse_command_get_oscillator_type_response(_storage->command.oscillator, command::OSCILLATOR.report_length);
         break;
+    case command::SAVE_DCD.id:
+        sc = parse_command_save_dcd(_storage->command.save_dcd, command::SAVE_DCD.report_length);
+        break;
     default:
         sc = bno_err_t::SH2_INVALID_COMMAND_ID;
     }
@@ -683,11 +686,25 @@ bno_err_t bno_parser::parse_command_get_oscillator_type_response(command_oscilla
     _data_access->sensor_config().set_mask_and_lock(bno_constants::bitmask_config::COMMAND_OSCILLATOR_TYPE_RESPONSE);
     parse_command_metadata(dest.metadata);
 
-    dest.type = (bno_oscillator_type_t )_rx_packet->data[offset::R_TYPE];
+    dest.type = (bno_oscillator_type_t)_rx_packet->data[offset::R_TYPE];
 
     return bno_err_t::OK;
 }
 
+bno_err_t bno_parser::parse_command_save_dcd(command_save_dcd_t& dest, uint8_t report_length) {
+
+    namespace offset = bno_constants::data_offset::config::command::save_dcd;
+
+    if(_rx_packet->size < report_length)
+        return bno_err_t::SH2_INVALID_REPORT_LENGTH;
+
+    _data_access->sensor_config().set_mask_and_lock(bno_constants::bitmask_config::COMMAND_SAVE_DCD);
+    parse_command_metadata(dest.metadata);
+
+    dest.status = _rx_packet->data[offset::R_STATUS];
+
+    return bno_err_t::OK;
+}
 
 bno_err_t bno_parser::parse_advertisement_package() {
     

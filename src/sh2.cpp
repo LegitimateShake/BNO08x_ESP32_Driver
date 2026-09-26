@@ -551,3 +551,22 @@ bno_err_t SH2::send_command_get_oscillator_type() {
 
     return send_command_request(bno_constants::command::OSCILLATOR.id, nullptr, 0);
 }
+
+bno_err_t SH2::send_command_configure_periodic_dcd_save(bool enable) {
+
+    namespace offset = bno_constants::data_offset::config::command::periodic_dcd_save;
+    
+    uint8_t parameters[bno_constants::command::COMMAND_PARAMETER_AMOUNT] = {0x00};
+
+    uint8_t state = uint8_t(!enable);
+    parameters[offset::P_STATUS] = state;
+
+    return send_command_request(bno_constants::command::DCD_PERIODIC_SAVE.id, parameters, bno_constants::command::COMMAND_PARAMETER_AMOUNT);
+}
+
+bno_err_t SH2::send_command_save_dynamic_calbration_data() {
+
+    uint8_t parameters[bno_constants::command::COMMAND_PARAMETER_AMOUNT] = {0x00};
+
+    return send_command_request(bno_constants::command::SAVE_DCD.id, parameters, bno_constants::command::COMMAND_PARAMETER_AMOUNT);
+}

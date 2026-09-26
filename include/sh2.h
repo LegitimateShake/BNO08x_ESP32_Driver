@@ -152,6 +152,22 @@ bno_err_t send_command_get_oscillator_type();
 
 
 /**
+ * @brief Configures if the sensor should periodically automatically save dynamic calibration data
+ * @brief This command does not return a response
+ * @param enable Set to `true` to enable, set to `false` to disable
+ * @return bno_err_t status code. `bno_err_t::OK` on success
+ */
+bno_err_t send_command_configure_periodic_dcd_save(bool enable = true);
+
+
+/**
+ * @brief Save the current dynamic calibration data to flash
+ * @return bno_err_t status code. `bno_err_t::OK` on success
+ */
+bno_err_t send_command_save_dynamic_calbration_data();
+
+
+/**
  * @brief Set a feature command. This enables and disables sensor outputs
  * @param config Filled configuration struct for the sensor
  * @return bno_err_t status code. `bno_err_t::OK` on success

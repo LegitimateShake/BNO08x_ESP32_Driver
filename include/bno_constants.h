@@ -112,11 +112,11 @@ namespace bno_constants
     {
         static constexpr sh2_command_t ERRORS                      = {.id=0x01, .report_length=0};
         static constexpr sh2_command_t COUNTER                     = {.id=0x02, .report_length=0};
-        static constexpr sh2_command_t TARE                        = {.id=0x03, .report_length=0}; // Does not return anything
+        static constexpr sh2_command_t TARE                        = {.id=0x03, .report_length=0};  // Does not return anything
         static constexpr sh2_command_t INITIALIZE                  = {.id=0x04, .report_length=20};
-        static constexpr sh2_command_t DCD                         = {.id=0x06, .report_length=0};
-        static constexpr sh2_command_t ME_CALIBRATION              = {.id=0x07, .report_length=20};
-        static constexpr sh2_command_t DCD_PERIODIC_SAVE           = {.id=0x09, .report_length=0};
+        static constexpr sh2_command_t SAVE_DCD                    = {.id=0x06, .report_length=20};
+        static constexpr sh2_command_t ME_CALIBRATION              = {.id=0x07, .report_length=20}; 
+        static constexpr sh2_command_t DCD_PERIODIC_SAVE           = {.id=0x09, .report_length=0};  // Does not return anything
         static constexpr sh2_command_t OSCILLATOR                  = {.id=0x0A, .report_length=20};
         static constexpr sh2_command_t CLEAR_DCD_RESET             = {.id=0x0B, .report_length=0};
         static constexpr sh2_command_t TURNTABLE_CALIBRATION       = {.id=0x0C, .report_length=0}; // Not supported
@@ -244,6 +244,7 @@ namespace bno_constants
         static constexpr uint64_t PRODUCT_ID_RESPONSE                    = (uint64_t)1 << 6;
         static constexpr uint64_t COMMAND_ME_CALIBRATION_RESPONSE        = (uint64_t)1 << 7;
         static constexpr uint64_t COMMAND_OSCILLATOR_TYPE_RESPONSE       = (uint64_t)1 << 8;
+        static constexpr uint64_t COMMAND_SAVE_DCD                       = (uint64_t)1 << 9;
     } 
 
     // This bitmap is sent to the sensor (bit positions)
@@ -358,6 +359,11 @@ namespace bno_constants
                 static constexpr uint8_t EXTERNAL_CLOCK      = 0x02;
 
                 static constexpr uint8_t UNKNOWN          = 0xFF;
+            }
+
+            namespace save_dcd
+            {
+                static constexpr uint8_t SUCCESS = 0x00;
             }
 
             namespace tare
@@ -521,6 +527,16 @@ namespace bno_constants
                 namespace oscillator
                 {
                     static constexpr uint8_t R_TYPE = 5;
+                }
+
+                namespace save_dcd
+                {
+                    static constexpr uint8_t R_STATUS = 5;
+                }
+
+                namespace periodic_dcd_save
+                {
+                    static constexpr uint8_t P_STATUS = 0;
                 }
 
                 namespace me_calibration

@@ -70,6 +70,8 @@ class bno_parser {
 
                 bno_err_t parse_command_get_oscillator_type_response(command_oscillator_typte_t& dest, uint8_t report_length);
 
+                bno_err_t parse_command_save_dcd(command_save_dcd_t& dest, uint8_t report_length);
+
             bno_err_t parse_frs_write_response(bno_frs_write_response_t& dest, uint8_t report_length);
 
             bno_err_t parse_frs_read_response(bno_frs_read_response_t& dest, uint8_t report_length);

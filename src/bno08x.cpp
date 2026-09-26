@@ -548,3 +548,26 @@ bno_err_t BNO08x::read_oscillator_type(bno_oscillator_type_t& dest, TickType_t t
 
     return _SH2.get_config_packet(mask::COMMAND_OSCILLATOR_TYPE_RESPONSE, _SH2.storage().command.oscillator.type, dest, ticks_to_timeout);
 }
+
+bno_err_t BNO08x::save_dynamic_calibration_data(TickType_t ticks_to_timeout) {
+
+    namespace mask = bno_constants::bitmask_config;
+    bno_err_t sc;
+
+    _SH2.clear_config_mask(mask::COMMAND_SAVE_DCD);
+
+    sc = _SH2.send_command_save_dynamic_calbration_data();
+    if(sc != bno_err_t::OK)
+        return sc;
+
+    command_save_dcd_t dest;
+
+    sc = _SH2.get_config_packet(mask::COMMAND_SAVE_DCD, _SH2.storage().command.save_dcd, dest, ticks_to_timeout);
+    if(sc != bno_err_t::OK)
+        return sc;
+
+    if(dest.status == bno_constants::data::command::save_dcd::SUCCESS)
+        return bno_err_t::OK;
+    else 
+        return bno_err_t::SH2_OPERATION_FAILED;
+}
