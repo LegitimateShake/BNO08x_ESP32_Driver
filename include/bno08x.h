@@ -17,7 +17,7 @@
 
 class BNO08x {
 
-public:
+private:
 
     shtp _shtp;
     SH2  _SH2;
