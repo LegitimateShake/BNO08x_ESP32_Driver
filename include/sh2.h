@@ -168,6 +168,13 @@ bno_err_t send_command_save_dynamic_calbration_data();
 
 
 /**
+ * @brief Clear any copy of DCD stored in RAM and perform a chip reset immediately
+ * @return bno_err_t status code. `bno_err_t::OK` on success
+ */
+bno_err_t send_command_clear_dcd_and_reset();
+
+
+/**
  * @brief Set a feature command. This enables and disables sensor outputs
  * @param config Filled configuration struct for the sensor
  * @return bno_err_t status code. `bno_err_t::OK` on success

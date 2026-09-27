@@ -537,12 +537,12 @@ bno_err_t SH2::send_command_configure_me_calibration(const me_calibration_config
 
     uint8_t parameters[bno_constants::command::COMMAND_PARAMETER_AMOUNT] = {0x00};
 
-    parameters[offset::P_ACCEL_CAL_ENABLE]        = (uint8_t)config.accel_calibration_enabled;
-    parameters[offset::P_GYRO_CAL_ENABLE]         = (uint8_t)config.gyro_calibration_enabled;
-    parameters[offset::P_MAG_CAL_ENABLE]          = (uint8_t)config.mag_calibration_enabled;
+    parameters[offset::P_ACCEL_CAL_ENABLE]        = (uint8_t)config.accel_calibration;
+    parameters[offset::P_GYRO_CAL_ENABLE]         = (uint8_t)config.gyro_calibration;
+    parameters[offset::P_MAG_CAL_ENABLE]          = (uint8_t)config.mag_calibration;
     parameters[offset::P_SUBCOMMAND]              = subcommand::CONFIGURE_ME_CALIBRATION;
-    parameters[offset::P_PLANAR_ACCEL_CAL_ENABLE] = (uint8_t)config.planar_accel_calibration_enabled;
-    parameters[offset::P_ON_TABLE_CAL_ENABLE]     = (uint8_t)config.on_table_calibration_enabled;
+    parameters[offset::P_PLANAR_ACCEL_CAL_ENABLE] = (uint8_t)config.planar_accel_calibration;
+    parameters[offset::P_ON_TABLE_CAL_ENABLE]     = (uint8_t)config.on_table_calibration;
 
     return send_command_request(bno_constants::command::ME_CALIBRATION.id, parameters, bno_constants::command::COMMAND_PARAMETER_AMOUNT);
 }
@@ -569,4 +569,11 @@ bno_err_t SH2::send_command_save_dynamic_calbration_data() {
     uint8_t parameters[bno_constants::command::COMMAND_PARAMETER_AMOUNT] = {0x00};
 
     return send_command_request(bno_constants::command::SAVE_DCD.id, parameters, bno_constants::command::COMMAND_PARAMETER_AMOUNT);
+}
+
+bno_err_t SH2::send_command_clear_dcd_and_reset() {
+
+    uint8_t parameters[bno_constants::command::COMMAND_PARAMETER_AMOUNT] = {0x00};
+
+    return send_command_request(bno_constants::command::CLEAR_DCD_RESET.id, parameters, bno_constants::command::COMMAND_PARAMETER_AMOUNT);
 }

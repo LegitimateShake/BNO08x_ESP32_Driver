@@ -17,7 +17,7 @@
 
 class BNO08x {
 
-private:
+public:
 
     shtp _shtp;
     SH2  _SH2;
@@ -153,10 +153,36 @@ inline bno_err_t frs_read_user_record(uint32_t *dest, size_t buffer_size, size_t
 
 
 /**
+ * @brief Configures if the game rotation vector should use the magnetometer for stabilization
+ * @param mag_stabilization Set to ENABLE / DISABLE
+ * @return bno_err_t status code. `bno_err_t::OK` on success
+ */
+bno_err_t frs_set_mag_stabilized_game_rotation_vector(bno_state_t mag_stabilization = bno_state_t::DISABLE);
+
+
+/**
+ * @brief Configures the source for the time between two samples of the gyroscope.
+ * @brief If the system clock is based on a crystal or an accurate oscillator (±2%) then use time stamps. Otherwise use the gyroscope period.
+ * @param time_source The source that should be used
+ * @return bno_err_t status code. `bno_err_t::OK` on success
+ */
+bno_err_t frs_set_motion_engine_time_source(bno_time_source_t time_source);
+
+
+/**
  * @brief Send a packet to the BNO08x, telling it to reset
  * @return bno_err_t status code. `bno_err_t::OK` on success
  */
 bno_err_t soft_reset();
+
+
+/**
+ * @brief Send a packet to the BNO08x, telling it to reset.
+ * @brief On a normal, non-power-up, reset, dynamic calibration data is stored from RAM into sensor flash.
+ *        This command prevents this from happening and fully clears the dynamic calibration data from RAM. 
+ * @return bno_err_t status code. `bno_err_t::OK` on success
+ */
+bno_err_t soft_reset_and_clear_dcd();
 
 
 /**
@@ -192,17 +218,17 @@ inline bno_err_t exit_sleep()
  * @param ticks_to_timeout Amount of ticks the function waits for a packet before the read is aborted
  * @return bno_err_t status code. `bno_err_t::OK` on success
  */
-bno_err_t set_motion_engine_calibration_configuration(const me_calibration_config_t config, TickType_t ticks_to_timeout = bno_constants::driver_config::BNO_TICKS_TO_TIMEOUT);
+bno_err_t set_motion_engine_calibration_config(const me_calibration_config_t config, TickType_t ticks_to_timeout = bno_constants::driver_config::BNO_TICKS_TO_TIMEOUT);
 
 
 /**
  * @brief Configures if the sensor should periodically save dynamic calibration data to flash.
- * @param enable_dynamic_dcd_save Set to `true` to enable, set to `false` to disable
+ * @param dynamic_dcd_save Set to ENABLE / DISABLE
  * @return bno_err_t status code. `bno_err_t::OK` on success
  */
-bno_err_t set_periodic_dcd_save(bool enable_dynamic_dcd_save = true)
+bno_err_t set_periodic_dcd_save(bno_state_t dynamic_dcd_save = bno_state_t::ENABLE)
 {
-    return _SH2.send_command_configure_periodic_dcd_save(enable_dynamic_dcd_save);
+    return _SH2.send_command_configure_periodic_dcd_save((bool)dynamic_dcd_save);
 }
 
 
@@ -262,29 +288,29 @@ inline void config_sensor_batch_interval(bno_sensor_config_t& config, uint32_t b
 /**
  * @brief Configure if this sensor of the BNO086 should be able to wake up the application processor from sleep when new data is available. 
  * @param config The configuration struct that should be adjusted
- * @param wakeup_enable Set to true to enable that when the sensor has a report to send, it can send this report to the host on the wake channel
+ * @param wakeup Set to ENABLE to enable that when the sensor has a report to send, it can send this report to the host on the wake channel
 */
-void config_sensor_wakeup(bno_sensor_config_t& config, bool wakeup_enable);
+void config_sensor_wakeup(bno_sensor_config_t& config, bno_state_t wakeup);
 
 
 /**
  * @brief Configure if the sensor should remain on, even if the BNO08x is set into sleep mode. This only has an effect for the step counter.
  * @param config The configuration struct that should be adjusted
- * @param always_on_enable Set to true if the sensor should remain on, even in sleep mode.
+ * @param always_on Set to ENABLE if the sensor should remain on, even in sleep mode.
  */
-void config_sensor_always_on(bno_sensor_config_t& config, bool always_on_enable);
+void config_sensor_always_on(bno_sensor_config_t& config, bno_state_t always_on);
 
 
 /**
  * @brief Configure if a sensor should only send new data when the measurement changes by a relative or absolute amount.
  * @brief Only works for Significant Motion Detector and Environment Sensors
  * @param config The configuration struct that should be adjusted
- * @param change_sensitivity_enable Enable or disable the feature
- * @param change_sensitivity_relative Set to false to use an absolute value as a refererence and to true to use the last measurement as a reference
+ * @param change_sensitivity Enable or disable the feature
+ * @param change_sensitivity_relative Set to DISABLE to use an absolute value as a refererence and to true to use the last measurement as a reference
  * @param diff_to_event_trigger If change_sensitivity_relative = false: Absolute value the sensor must exceed
  *                              If change_sensitivity_relative = true:  Difference to the last sesor report the sensor must exceed             
  */
-void config_sensor_change_sensitivity(bno_sensor_config_t& config, bool change_sensitivity_enable, bool change_sensitivity_relative, float diff_to_event_trigger);
+void config_sensor_change_sensitivity(bno_sensor_config_t& config, bno_state_t change_sensitivity, bno_state_t change_sensitivity_relative, float diff_to_event_trigger);
 
 
 /**

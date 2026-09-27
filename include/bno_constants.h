@@ -118,10 +118,10 @@ namespace bno_constants
         static constexpr sh2_command_t ME_CALIBRATION              = {.id=0x07, .report_length=20}; 
         static constexpr sh2_command_t DCD_PERIODIC_SAVE           = {.id=0x09, .report_length=0};  // Does not return anything
         static constexpr sh2_command_t OSCILLATOR                  = {.id=0x0A, .report_length=20};
-        static constexpr sh2_command_t CLEAR_DCD_RESET             = {.id=0x0B, .report_length=0};
+        static constexpr sh2_command_t CLEAR_DCD_RESET             = {.id=0x0B, .report_length=0}; // Does not return anything
         static constexpr sh2_command_t TURNTABLE_CALIBRATION       = {.id=0x0C, .report_length=0}; // Not supported
         static constexpr sh2_command_t BOOTLOADER                  = {.id=0x0D, .report_length=0};
-        static constexpr sh2_command_t INTERACTIVE_CALIBRATION     = {.id=0x0E, .report_length=0};
+        static constexpr sh2_command_t INTERACTIVE_CALIBRATION     = {.id=0x0E, .report_length=0}; // Not supported
 
         static constexpr size_t COMMAND_PARAMETER_AMOUNT        = 9;
 
@@ -383,6 +383,15 @@ namespace bno_constants
                     static constexpr uint8_t AR_VR_STABILIZED_ROTATION_VECTOR      = 0x04;
                     static constexpr uint8_t AR_VR_STABILIZED_GAME_ROTATION_VECTOR = 0x05;
                 }
+            }
+        }
+
+        namespace frs
+        {
+            namespace time_source
+            {
+                static constexpr uint32_t USE_GYRO_PERIOD = 0x00;
+                static constexpr uint32_t USE_TIMESTAMPS  = 0x01;
             }
         }
     }

@@ -602,7 +602,7 @@ bno_err_t bno_parser::parse_command_response() {
     uint8_t commandID = _rx_packet->data[offset::R_COMMAND_ID];
     //MSB indicates if the report command is a response to a request or not (not important)
     commandID &= 0x7F;
-
+    
     switch (commandID)
     {
     case command::INITIALIZE.id:
@@ -613,6 +613,12 @@ bno_err_t bno_parser::parse_command_response() {
         break;
     case command::TURNTABLE_CALIBRATION.id:
         // This one seems to not be supported by the bno08x
+        break;
+    case command::INTERACTIVE_CALIBRATION.id:
+        // This one seems to not be supported by the bno08x
+        break;
+    case command::CLEAR_DCD_RESET.id:
+        // This one does not send a response
         break;
     case command::ME_CALIBRATION.id:
         sc = parse_command_me_calibration_response(_storage->command.me_calibration, command::ME_CALIBRATION.report_length);
@@ -666,12 +672,12 @@ bno_err_t bno_parser::parse_command_me_calibration_response(command_me_calibrati
 
     const uint8_t* data = _rx_packet->data;
 
-    dest.configuration_successful                = !data[offset::R_STATUS];
-    dest.config.accel_calibration_enabled        = data[offset::R_ACCEL_CAL_ENABLE];
-    dest.config.gyro_calibration_enabled         = data[offset::R_GYRO_CAL_ENABLE];
-    dest.config.mag_calibration_enabled          = data[offset::R_MAG_CAL_ENABLE];
-    dest.config.planar_accel_calibration_enabled = data[offset::R_PLANAR_ACCEL_CAL_ENABLE];
-    dest.config.on_table_calibration_enabled     = data[offset::R_ON_TABLE_CAL_ENABLE];
+    dest.configuration_successful        = !data[offset::R_STATUS];
+    dest.config.accel_calibration        = bno_state_t(data[offset::R_ACCEL_CAL_ENABLE]);
+    dest.config.gyro_calibration         = bno_state_t(data[offset::R_GYRO_CAL_ENABLE]);
+    dest.config.mag_calibration          = bno_state_t(data[offset::R_MAG_CAL_ENABLE]);
+    dest.config.planar_accel_calibration = bno_state_t(data[offset::R_PLANAR_ACCEL_CAL_ENABLE]);
+    dest.config.on_table_calibration     = bno_state_t(data[offset::R_ON_TABLE_CAL_ENABLE]);
 
     return bno_err_t::OK;
 }

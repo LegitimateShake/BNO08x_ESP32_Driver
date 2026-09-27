@@ -59,41 +59,41 @@ bno_sensor_config_t BNO08x::create_sensor_config(bno_sensor_id_t id, uint16_t fr
     };
 
     if(id == bno_sensor_id_t::STEP_DETECTOR) 
-        config_sensor_change_sensitivity(config, true, false, 1.0f);
+        config_sensor_change_sensitivity(config, bno_state_t::ENABLE, bno_state_t::DISABLE, 1.0f);
 
     return config;
 }
 
-void BNO08x::config_sensor_wakeup(bno_sensor_config_t& config, bool wakeup_enable) {
+void BNO08x::config_sensor_wakeup(bno_sensor_config_t& config, bno_state_t wakeup) {
 
     namespace mask = bno_constants::feature_flags;
 
-    if(wakeup_enable) 
+    if(wakeup == bno_state_t::ENABLE) 
         config.feature_flags |=  mask::WAKEUP_ENABLED;
     else
         config.feature_flags &= ~mask::WAKEUP_ENABLED;
 }
 
-void BNO08x::config_sensor_always_on(bno_sensor_config_t& config, bool always_on_enable) {
+void BNO08x::config_sensor_always_on(bno_sensor_config_t& config, bno_state_t always_on) {
 
     namespace mask = bno_constants::feature_flags;
     
-    if(always_on_enable) 
+    if(always_on == bno_state_t::ENABLE) 
         config.feature_flags |=  mask::ALWAYS_ON_ENABLED;
     else
         config.feature_flags &= ~mask::ALWAYS_ON_ENABLED;
 }
 
-void BNO08x::config_sensor_change_sensitivity(bno_sensor_config_t& config, bool change_sensitivity_enable, bool change_sensitivity_relative, float diff_to_event_trigger) {
+void BNO08x::config_sensor_change_sensitivity(bno_sensor_config_t& config, bno_state_t change_sensitivity_enable, bno_state_t change_sensitivity_relative, float diff_to_event_trigger) {
 
     namespace mask = bno_constants::feature_flags;
 
-    if(change_sensitivity_enable)
+    if(change_sensitivity_enable == bno_state_t::ENABLE)
         config.feature_flags |=  mask::CHANGE_SENSITIVITY_ENABLED;
     else
         config.feature_flags &= ~mask::CHANGE_SENSITIVITY_ENABLED;
 
-    if(change_sensitivity_relative)
+    if(change_sensitivity_relative == bno_state_t::ENABLE)
         config.feature_flags |=  mask::CHANGE_SENSITIVITY_RELATIVE;
     else
         config.feature_flags &= ~mask::CHANGE_SENSITIVITY_RELATIVE;
@@ -401,6 +401,20 @@ bno_err_t BNO08x::frs_read_serial_number(uint32_t& dest) {
     return bno_err_t::OK;
 }
 
+bno_err_t BNO08x::frs_set_mag_stabilized_game_rotation_vector(bno_state_t enable_mag_stabilization) {
+
+    uint32_t word = (uint32_t)enable_mag_stabilization;
+
+    return _SH2.write_frs_record(bno_constants::frs::config::FUSION_CONTROL_FLAGS, &word, 1);
+}
+
+bno_err_t BNO08x::frs_set_motion_engine_time_source(bno_time_source_t time_source) {
+
+    uint32_t word = (uint32_t)time_source;
+
+    return _SH2.write_frs_record(bno_constants::frs::config::MOTION_ENGINE_TIME_SOURCE, &word, 1);
+}
+
 bno_err_t BNO08x::wait_for_init_packages() {
 
     bno_err_t sc;
@@ -430,6 +444,20 @@ bno_err_t BNO08x::soft_reset() {
     _SH2.clear_config_mask(mask::COMMAND_INITIALIZED | mask::RESET_RESPONSE_EXECUTABLE | mask::ADVERTISEMENT_PACKET);
 
     sc = _SH2.send_executable_command(bno_constants::executable_command::RESET);
+    if(sc != bno_err_t::OK)
+        return sc;
+
+    return wait_for_init_packages();
+}
+
+bno_err_t BNO08x::soft_reset_and_clear_dcd() {
+
+    namespace mask = bno_constants::bitmask_config;
+    bno_err_t sc;
+
+    _SH2.clear_config_mask(mask::COMMAND_INITIALIZED | mask::RESET_RESPONSE_EXECUTABLE | mask::ADVERTISEMENT_PACKET);
+
+    sc = _SH2.send_command_clear_dcd_and_reset();
     if(sc != bno_err_t::OK)
         return sc;
 
@@ -512,7 +540,7 @@ bno_err_t BNO08x::read_motion_engine_calibration_config(me_calibration_config_t&
     return _SH2.get_config_packet(mask::COMMAND_ME_CALIBRATION_RESPONSE, _SH2.storage().command.me_calibration.config, dest, ticks_to_timeout);
 }
 
-bno_err_t BNO08x::set_motion_engine_calibration_configuration(const me_calibration_config_t config, TickType_t ticks_to_timeout) {
+bno_err_t BNO08x::set_motion_engine_calibration_config(const me_calibration_config_t config, TickType_t ticks_to_timeout) {
 
     namespace mask = bno_constants::bitmask_config;
     bno_err_t sc;
