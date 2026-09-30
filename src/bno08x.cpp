@@ -599,3 +599,18 @@ bno_err_t BNO08x::save_dynamic_calibration_data(TickType_t ticks_to_timeout) {
     else 
         return bno_err_t::SH2_OPERATION_FAILED;
 }
+
+bno_err_t BNO08x::frs_set_sensor_orientation(uint16_t frs_type, float w, float x, float y, float z) {
+
+    namespace sf = bno_constants::scale_factor;
+    uint32_t words[4] = {0};
+
+    words[0] = uint32_t(int32_t(x / sf::FRS_SENSOR_ORIENTATION));
+    words[1] = uint32_t(int32_t(y / sf::FRS_SENSOR_ORIENTATION));
+    words[2] = uint32_t(int32_t(z / sf::FRS_SENSOR_ORIENTATION));
+    words[3] = uint32_t(int32_t(w / sf::FRS_SENSOR_ORIENTATION));
+    
+    return _SH2.write_frs_record(frs_type, words, 4);
+
+
+}

@@ -275,6 +275,7 @@ namespace bno_constants
         static constexpr float STABILITY_CLASSIFIER_DELTA_ORIENTATION      = 1.0f / (1 << 28); // Q-Point = 28
         static constexpr float STABILITY_CLASSIFIER_STABLE_THRESHOLD       = 1.0f / (1 << 25); // Q-Point = 25
         static constexpr float SIGNIFICANT_MOTION_DETECTOR_ACCEL_THRESHOLD = 1.0f / (1 << 24); // Q-Point = 24
+        static constexpr float FRS_SENSOR_ORIENTATION                      = 1.0f / (1 << 30); // Q-Point = 30
     }
 
     namespace sensor

@@ -17,19 +17,21 @@
 
 class BNO08x {
 
-private:
+    public:
 
-    shtp _shtp;
-    SH2  _SH2;
+        shtp _shtp;
+        SH2  _SH2;
 
-    static constexpr char TAG[] = "BNO08x";
-    bool _initialized = false;
+        static constexpr char TAG[] = "BNO08x";
+        bool _initialized = false;
 
-    bno_err_t frs_calibrate_env_sensor_temp_hum_pressure(bno_sensor_id_t sensor_id, float target_value, float scale, bool clear_record);
+        bno_err_t frs_calibrate_env_sensor_temp_hum_pressure(bno_sensor_id_t sensor_id, float target_value, float scale, bool clear_record);
 
-    bno_err_t wait_for_init_packages();
+        bno_err_t frs_set_sensor_orientation(uint16_t frs_type, float w, float x, float y, float z);
 
-    uint16_t compute_change_sensitivity(uint8_t sensor_id, float change_sensitivity);
+        bno_err_t wait_for_init_packages();
+
+        uint16_t compute_change_sensitivity(uint8_t sensor_id, float change_sensitivity);
 
 public:
 
@@ -167,6 +169,65 @@ bno_err_t frs_set_mag_stabilized_game_rotation_vector(bno_state_t mag_stabilizat
  * @return bno_err_t status code. `bno_err_t::OK` on success
  */
 bno_err_t frs_set_motion_engine_time_source(bno_time_source_t time_source);
+
+
+/**
+ * @brief Sets the rotation of the MotionEngine output coordinate system relative to the sensor’s coordinate system.
+ * @brief This quaternion orientation will be applied to the quaternion outputs of the sensor
+ * @param w, x, y, z Quaterion orientation
+ * @return bno_err_t status code. `bno_err_t::OK` on success
+ */
+inline bno_err_t frs_set_system_orientation(float w = 0.0f, float x = 0.0f, float y = 0.0f, float z = 0.0f)
+{
+    return frs_set_sensor_orientation(bno_constants::frs::config::SYSTEM_ORIENTATION, w, x, y, z);
+}
+
+
+/**
+ * @brief Set a reorientation for the accelerometer output.
+ * @brief This quaternion orientation will be applied to the acceleration outputs of the sensor
+ * @param w, x, y, z Quaterion orientation
+ * @return bno_err_t status code. `bno_err_t::OK` on success
+ * 
+ */
+inline bno_err_t frs_set_primary_accelerometer_orientation(float w = 0.0f, float x = 0.0f, float y = 0.0f, float z = 0.0f)
+{
+    return frs_set_sensor_orientation(bno_constants::frs::config::PRIMARY_ACCEL_ORIENTATION, w, x, y, z);
+}
+
+/**
+ * @brief Set a reorientation for the screen rotation accelerometer output.
+ * @param w, x, y, z Quaterion orientation
+ * @return bno_err_t status code. `bno_err_t::OK` on success
+ */
+inline bno_err_t frs_set_screen_rotation_accelerometer_orientation(float w = 0.0f, float x = 0.0f, float y = 0.0f, float z = 0.0f)
+{
+    return frs_set_sensor_orientation(bno_constants::frs::config::SCREEN_ROTATION_ACCEL_ORIENTATION, w, x, y, z);
+}
+
+
+/**
+ * @brief Set a reorientation for the gyroscope output.
+ * @brief This quaternion orientation will be applied to the gyroscope outputs of the sensor
+ * @param w, x, y, z Quaterion orientation
+ * @return bno_err_t status code. `bno_err_t::OK` on success
+ */
+inline bno_err_t frs_set_gyroscope_orientation(float w = 0.0f, float x = 0.0f, float y = 0.0f, float z = 0.0f)
+{
+    return frs_set_sensor_orientation(bno_constants::frs::config::GYRO_ORIENTATION, w, x, y, z);
+}
+
+
+/**
+ * @brief Set a reorientation for the magnetometer output.
+ * @brief This quaternion orientation will be applied to the magnetometer outputs of the sensor
+ * @param w, x, y, z Quaterion orientation
+ * @return bno_err_t status code. `bno_err_t::OK` on success
+ */
+inline bno_err_t frs_set_magnetometer_orientation(float w = 0.0f, float x = 0.0f, float y = 0.0f, float z = 0.0f)
+{
+    return frs_set_sensor_orientation(bno_constants::frs::config::MAG_ORIENTATION, w, x, y, z);
+}
 
 
 /**

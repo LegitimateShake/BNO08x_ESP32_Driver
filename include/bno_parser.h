@@ -15,7 +15,7 @@ class bno_parser {
 
         bno_err_t begin(bno_data_t* data_storage, data_access_sync* data_exchange);
 
-        bool is_initialized()
+        inline bool is_initialized()
         {
             return _initialized;
         }
@@ -51,6 +51,11 @@ class bno_parser {
         {
             return uint32_t(data[3]) << 24 | uint32_t(data[2]) << 16 | uint32_t(data[1] <<  8) | uint32_t(data[0]);
         }
+        
+        inline bool valid_packet_size(uint8_t report_length)
+        {
+            return _rx_packet->size >= report_length;
+        }
 
     bno_err_t parse_channel();
 
@@ -58,25 +63,25 @@ class bno_parser {
 
         bno_err_t parse_channel_control();
 
-            bno_err_t parse_product_id_response(bno_product_id_t&dest, uint8_t report_length);
+            bno_err_t parse_product_id_response(bno_product_id_t&dest);
 
             bno_err_t parse_command_response();
 
                 void parse_command_metadata(command_metadata_t& dest);
 
-                bno_err_t parse_command_initialize(command_initialized_t& dest, uint8_t report_length);
+                bno_err_t parse_command_initialize(command_initialized_t& dest);
 
-                bno_err_t parse_command_me_calibration_response(command_me_calibration_config_t& dest, uint8_t report_length);
+                bno_err_t parse_command_me_calibration_response(command_me_calibration_config_t& dest);
 
-                bno_err_t parse_command_get_oscillator_type_response(command_oscillator_typte_t& dest, uint8_t report_length);
+                bno_err_t parse_command_get_oscillator_type_response(command_oscillator_typte_t& dest);
 
-                bno_err_t parse_command_save_dcd(command_save_dcd_t& dest, uint8_t report_length);
+                bno_err_t parse_command_save_dcd(command_save_dcd_t& dest);
 
-            bno_err_t parse_frs_write_response(bno_frs_write_response_t& dest, uint8_t report_length);
+            bno_err_t parse_frs_write_response(bno_frs_write_response_t& dest);
 
-            bno_err_t parse_frs_read_response(bno_frs_read_response_t& dest, uint8_t report_length);
+            bno_err_t parse_frs_read_response(bno_frs_read_response_t& dest);
 
-            bno_err_t parse_get_feature_response(bno_sensor_config_t& dest, uint8_t report_length);
+            bno_err_t parse_get_feature_response(bno_sensor_config_t& dest);
 
         bno_err_t parse_channel_executable();
 
@@ -94,15 +99,15 @@ class bno_parser {
 
             bno_err_t parse_raw_accel_gyro_mag(raw_accel_gyro_mag_t& dest, uint8_t report_length);
 
-            bno_err_t parse_stability_classifier(stability_classifier_t& dest, uint8_t report_length);
+            bno_err_t parse_stability_classifier(stability_classifier_t& dest);
 
-            bno_err_t parse_stability_detector(stability_detector_t& dest, uint8_t report_length);
+            bno_err_t parse_stability_detector(stability_detector_t& dest);
 
-            bno_err_t parse_significant_motion_detector(significant_motion_detector_t& dest, uint8_t report_length);
+            bno_err_t parse_significant_motion_detector(significant_motion_detector_t& dest);
 
-            bno_err_t parse_step_counter(step_counter_t& dest, uint8_t report_length);
+            bno_err_t parse_step_counter(step_counter_t& dest);
 
-            bno_err_t parse_step_detector(step_counter_t& dest, uint8_t report_length);
+            bno_err_t parse_step_detector(step_counter_t& dest);
 
         bno_err_t parse_channel_gyro();
 };

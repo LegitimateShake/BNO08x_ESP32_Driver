@@ -49,7 +49,6 @@ enum class bno_err_t : uint16_t {
     FRS_WRITE_COULD_NOT_BE_FINISHED       = 608
 };
 
-
 /**
  * @brief Function checks the return code of a BNO08x function call and logs the error code on error.
  * @brief Returns if the status code is `bno_err_t::OK`
@@ -63,7 +62,6 @@ static inline void bno_check_sc(const char* tag, bno_err_t sc, bool pause_progra
     while (pause_program_on_error)
         vTaskDelay(pdMS_TO_TICKS(10000));
 }
-
 
 /**
  * @brief IDs of each sensor output of the BNO08x
@@ -545,29 +543,6 @@ class sh2_packet_writer {
         }
 };
 
-template<typename T>
-class bitmask_builder {
-
-    T _mask;
-
-    public:
-
-        constexpr bitmask_builder(T mask = 0) : _mask(mask) {}
-
-        constexpr bitmask_builder& set(uint8_t bit_position) {
-            _mask |= ((T)1 << bit_position);
-            return *this;
-        }
-
-        constexpr bitmask_builder& clear(uint8_t bit_position){
-            _mask &= ~((T)1 << bit_position);
-            return *this;
-        }
-
-        inline constexpr T get() const {
-            return _mask;
-        }
-};
 
 template<typename T>
 class bitmap_access {

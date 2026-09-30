@@ -17,6 +17,9 @@ bno_err_t bno_parser::begin(bno_data_t* data_storage, data_access_sync* data_exc
 
 bno_err_t bno_parser::parse(const shtp_packet_t* rx_packet) {
 
+    if(is_initialized() == false)
+        return bno_err_t::PARSER_OBJECT_NOT_INITIALIZED;
+
     if(rx_packet == nullptr)
         return bno_err_t::INVALID_INPUT;
 
@@ -28,9 +31,6 @@ bno_err_t bno_parser::parse(const shtp_packet_t* rx_packet) {
 bno_err_t bno_parser::parse_channel() {
 
     namespace channel = bno_constants::channel;
-
-    if(!_initialized)
-        return bno_err_t::PARSER_OBJECT_NOT_INITIALIZED;
 
     bno_err_t sc = bno_err_t::SH2_INVALID_CHANNEL;
 
@@ -68,7 +68,7 @@ bno_err_t bno_parser::parse_channel() {
 
 bno_err_t bno_parser::parse_channel_executable() {
 
-    if(_rx_packet->size < bno_constants::control_type::packet_size::EXECUTABLE)
+    if(!valid_packet_size(bno_constants::control_type::packet_size::EXECUTABLE))
         return bno_err_t::SH2_INVALID_REPORT_LENGTH;
 
     _data_access->sensor_config().set_mask_and_lock(bno_constants::bitmask_config::RESET_RESPONSE_EXECUTABLE);
@@ -138,13 +138,13 @@ bno_err_t bno_parser::parse_channel_reports() {
     case sensor::TAP_DETECTOR.id:
         break;
     case sensor::STEP_COUNTER.id:
-        sc = parse_step_counter(_storage->sensor.step_counter, sensor::STEP_COUNTER.report_length);
+        sc = parse_step_counter(_storage->sensor.step_counter);
         break;
     case sensor::SIGNIFICANT_MOTION_DETECTOR.id:
-        sc = parse_significant_motion_detector(_storage->sensor.significant_motion_detector, sensor::SIGNIFICANT_MOTION_DETECTOR.report_length);
+        sc = parse_significant_motion_detector(_storage->sensor.significant_motion_detector);
         break;
     case sensor::STABILITY_CLASSIFIER.id:
-        sc = parse_stability_classifier(_storage->sensor.stablitity_classifier, sensor::STABILITY_CLASSIFIER.report_length);
+        sc = parse_stability_classifier(_storage->sensor.stablitity_classifier);
         break;
     case sensor::RAW_ACCELEROMETER.id:
         sc = parse_raw_accel_gyro_mag(_storage->sensor.raw_acceleration, sensor::RAW_ACCELEROMETER.report_length);
@@ -156,7 +156,7 @@ bno_err_t bno_parser::parse_channel_reports() {
         sc = parse_raw_accel_gyro_mag(_storage->sensor.raw_magnetometer, sensor::RAW_MAGNETOMETER.report_length);
         break;
     case sensor::STEP_DETECTOR.id:
-        sc = parse_step_detector(_storage->sensor.step_detector, sensor::STEP_DETECTOR.report_length);
+        sc = parse_step_detector(_storage->sensor.step_detector);
         break;
     case sensor::SHAKE_DETECTOR.id:
         break;
@@ -165,7 +165,7 @@ bno_err_t bno_parser::parse_channel_reports() {
     case sensor::PICKUP_DETECTOR.id:
         break;
     case sensor::STABILITY_DETECTOR.id:
-        sc = parse_stability_detector(_storage->sensor.stability_detector, sensor::STABILITY_DETECTOR.report_length);
+        sc = parse_stability_detector(_storage->sensor.stability_detector);
         break;
     case sensor::PERSONAL_ACTIVITY_CLASSIFIER.id:
         break;
@@ -196,7 +196,7 @@ bno_err_t bno_parser::parse_channel_gyro() {
     namespace scale  = bno_constants::scale_factor;
     namespace offset = bno_constants::data_offset::report::gyro_integrated_rotation_vector;
 
-    if(_rx_packet->size < bno_constants::sensor::GYRO_INTEGRATED_ROTATION_VECTOR.report_length)
+    if(!valid_packet_size(bno_constants::sensor::GYRO_INTEGRATED_ROTATION_VECTOR.report_length))
         return bno_err_t::SH2_INVALID_REPORT_LENGTH;
 
     _data_access->sensor_data().set_bit_and_lock(bno_constants::sensor::GYRO_INTEGRATED_ROTATION_VECTOR.id);
@@ -232,7 +232,7 @@ bno_err_t bno_parser::parse_env_sensor(env_sensor_t& dest, uint8_t report_length
 
     namespace offset = bno_constants::data_offset::report;
 
-    if(_rx_packet->size < report_length)
+    if(!valid_packet_size(report_length))
         return bno_err_t::SH2_INVALID_REPORT_LENGTH;
     
     _data_access->sensor_data().set_bit_and_lock(_rx_packet->data[offset::metadata::REPORT_ID]);
@@ -258,7 +258,7 @@ bno_err_t bno_parser::parse_quaternion(quaternion_t& dest, uint8_t report_length
     namespace scale  = bno_constants::scale_factor;
     namespace offset = bno_constants::data_offset::report;
 
-    if(_rx_packet->size < report_length)
+    if(!valid_packet_size(report_length))
         return bno_err_t::SH2_INVALID_REPORT_LENGTH;
 
     _data_access->sensor_data().set_bit_and_lock(_rx_packet->data[offset::metadata::REPORT_ID]);
@@ -282,7 +282,7 @@ bno_err_t bno_parser::parse_calibrated_accel_gyro_mag(accel_gyro_mag_t& dest, ui
 
     namespace offset = bno_constants::data_offset::report;
 
-    if(_rx_packet->size < report_length)
+    if(!valid_packet_size(report_length))
         return bno_err_t::SH2_INVALID_REPORT_LENGTH;
 
     _data_access->sensor_data().set_bit_and_lock(_rx_packet->data[offset::metadata::REPORT_ID]);
@@ -301,7 +301,7 @@ bno_err_t bno_parser::parse_uncalibrated_gyro_mag(uncalibrated_gyro_mag_t& dest,
 
     namespace offset = bno_constants::data_offset::report;
 
-    if(_rx_packet->size < report_length)
+    if(!valid_packet_size(report_length))
         return bno_err_t::SH2_INVALID_REPORT_LENGTH;
 
     _data_access->sensor_data().set_bit_and_lock(_rx_packet->data[offset::metadata::REPORT_ID]);
@@ -324,7 +324,7 @@ bno_err_t bno_parser::parse_raw_accel_gyro_mag(raw_accel_gyro_mag_t& dest, uint8
 
     namespace offset = bno_constants::data_offset::report;
 
-    if(_rx_packet->size < report_length)
+    if(!valid_packet_size(report_length))
         return bno_err_t::SH2_INVALID_REPORT_LENGTH;
 
     _data_access->sensor_data().set_bit_and_lock(_rx_packet->data[offset::metadata::REPORT_ID]);
@@ -346,11 +346,12 @@ bno_err_t bno_parser::parse_raw_accel_gyro_mag(raw_accel_gyro_mag_t& dest, uint8
     return bno_err_t::OK;
 }
 
-bno_err_t bno_parser::parse_stability_classifier(stability_classifier_t& dest, uint8_t report_length) {
+bno_err_t bno_parser::parse_stability_classifier(stability_classifier_t& dest) {
 
     namespace offset = bno_constants::data_offset::report;
+    namespace sensor = bno_constants::sensor;
 
-    if(_rx_packet->size < report_length)
+    if(!valid_packet_size(sensor::STABILITY_CLASSIFIER.report_length))
         return bno_err_t::SH2_INVALID_REPORT_LENGTH;
 
     _data_access->sensor_data().set_bit_and_lock(_rx_packet->data[offset::metadata::REPORT_ID]);
@@ -366,11 +367,12 @@ bno_err_t bno_parser::parse_stability_classifier(stability_classifier_t& dest, u
     return bno_err_t::OK;
 }
 
-bno_err_t bno_parser::parse_stability_detector(stability_detector_t& dest, uint8_t report_length) {
+bno_err_t bno_parser::parse_stability_detector(stability_detector_t& dest) {
 
     namespace offset = bno_constants::data_offset::report;
+    namespace sensor = bno_constants::sensor;
 
-    if(_rx_packet->size < report_length)
+    if(!valid_packet_size(sensor::STABILITY_DETECTOR.report_length))
         return bno_err_t::SH2_INVALID_REPORT_LENGTH;
 
     _data_access->sensor_data().set_bit_and_lock(_rx_packet->data[offset::metadata::REPORT_ID]);
@@ -390,11 +392,12 @@ bno_err_t bno_parser::parse_stability_detector(stability_detector_t& dest, uint8
     return bno_err_t::OK;
 }
 
-bno_err_t bno_parser::parse_significant_motion_detector(significant_motion_detector_t& dest, uint8_t report_length) {
+bno_err_t bno_parser::parse_significant_motion_detector(significant_motion_detector_t& dest) {
 
     namespace offset = bno_constants::data_offset::report;
+    namespace sensor = bno_constants::sensor;
 
-    if(_rx_packet->size < report_length)
+    if(!valid_packet_size(sensor::SIGNIFICANT_MOTION_DETECTOR.report_length))
         return bno_err_t::SH2_INVALID_REPORT_LENGTH;
 
     _data_access->sensor_data().set_bit_and_lock(_rx_packet->data[offset::metadata::REPORT_ID]);
@@ -404,11 +407,12 @@ bno_err_t bno_parser::parse_significant_motion_detector(significant_motion_detec
     return bno_err_t::OK;
 }
 
-bno_err_t bno_parser::parse_step_counter(step_counter_t& dest, uint8_t report_length) {
+bno_err_t bno_parser::parse_step_counter(step_counter_t& dest) {
 
     namespace offset = bno_constants::data_offset::report;
+    namespace sensor = bno_constants::sensor;
 
-    if(_rx_packet->size < report_length)
+    if(!valid_packet_size(sensor::STEP_COUNTER.report_length))
         return bno_err_t::SH2_INVALID_REPORT_LENGTH;
 
     _data_access->sensor_data().set_bit_and_lock(_rx_packet->data[offset::metadata::REPORT_ID]);
@@ -419,11 +423,12 @@ bno_err_t bno_parser::parse_step_counter(step_counter_t& dest, uint8_t report_le
     return bno_err_t::OK;
 }
 
-bno_err_t bno_parser::parse_step_detector(step_counter_t& dest, uint8_t report_length) {
+bno_err_t bno_parser::parse_step_detector(step_counter_t& dest) {
 
     namespace offset = bno_constants::data_offset::report;
+    namespace sensor = bno_constants::sensor;
 
-    if(_rx_packet->size < report_length)
+    if(!valid_packet_size(sensor::STEP_DETECTOR.report_length))
         return bno_err_t::SH2_INVALID_REPORT_LENGTH;
 
     _data_access->sensor_data().set_bit_and_lock(_rx_packet->data[offset::metadata::REPORT_ID]);
@@ -448,16 +453,16 @@ bno_err_t bno_parser::parse_channel_control() {
         sc = parse_command_response();
         break;
     case control::FRS_WRITE_RESPONSE:
-        sc = parse_frs_write_response(_storage->frs.write_response, size::FRS_WRITE_RESPONSE);
+        sc = parse_frs_write_response(_storage->frs.write_response);
         break;
     case control::FRS_READ_RESPONSE:
-        sc = parse_frs_read_response(_storage->frs.read_response, size::FRS_READ_RESPONSE);
+        sc = parse_frs_read_response(_storage->frs.read_response);
         break;
     case control::GET_FEATURE_RESPONSE:
-        sc = parse_get_feature_response(_storage->config.sensor_config, size::GET_FEATURE_RESPONSE);
+        sc = parse_get_feature_response(_storage->config.sensor_config);
         break;
     case control::PRODUCT_ID_RESPONSE:
-        sc = parse_product_id_response(_storage->config.product_id, size::PRODUCT_ID_RESPONSE);
+        sc = parse_product_id_response(_storage->config.product_id);
         break;
 
     default:
@@ -466,14 +471,15 @@ bno_err_t bno_parser::parse_channel_control() {
     return sc;
 }
 
-bno_err_t bno_parser::parse_product_id_response(bno_product_id_t&dest, uint8_t report_length) {
+bno_err_t bno_parser::parse_product_id_response(bno_product_id_t&dest) {
 
     namespace offset = bno_constants::data_offset::config::product_id_response;
+    namespace size   = bno_constants::control_type::packet_size;
 
     // For some reason another 52 byte packet is received after the original 20 byte packet
     // No clue what this second packet contains. It seems like sw info for other part numbers ?
     // Anyway, for now we discard the second packet and just process the first packet 
-    if(_rx_packet->size != report_length)
+    if(_rx_packet->size != size::PRODUCT_ID_RESPONSE)
         return bno_err_t::SH2_INVALID_REPORT_LENGTH;
     
     _data_access->sensor_config().set_mask_and_lock(bno_constants::bitmask_config::PRODUCT_ID_RESPONSE);
@@ -491,11 +497,12 @@ bno_err_t bno_parser::parse_product_id_response(bno_product_id_t&dest, uint8_t r
 }
 
 
-bno_err_t bno_parser::parse_get_feature_response(bno_sensor_config_t& dest, uint8_t report_length) {
+bno_err_t bno_parser::parse_get_feature_response(bno_sensor_config_t& dest) {
 
     namespace offset = bno_constants::data_offset::config::feature_response;
+    namespace size   = bno_constants::control_type::packet_size;
 
-    if(_rx_packet->size < report_length)
+    if(!valid_packet_size(size::GET_FEATURE_RESPONSE))
         return bno_err_t::SH2_INVALID_REPORT_LENGTH;
 
     _data_access->sensor_config().set_mask_and_lock(bno_constants::bitmask_config::GET_FEATURE_RESPONSE);
@@ -512,12 +519,13 @@ bno_err_t bno_parser::parse_get_feature_response(bno_sensor_config_t& dest, uint
     return bno_err_t::OK;
 }
 
-bno_err_t bno_parser::parse_frs_write_response(bno_frs_write_response_t& dest, uint8_t report_length) {
+bno_err_t bno_parser::parse_frs_write_response(bno_frs_write_response_t& dest) {
 
-    namespace offset = bno_constants::data_offset::config::frs_write;
+    namespace offset     = bno_constants::data_offset::config::frs_write;
     namespace frs_status = bno_constants::frs::write_status;
+    namespace size       = bno_constants::control_type::packet_size;
 
-    if(_rx_packet->size < report_length)
+     if(!valid_packet_size(size::FRS_WRITE_RESPONSE))
         return bno_err_t::SH2_INVALID_REPORT_LENGTH;
 
     const uint8_t* data = _rx_packet->data;
@@ -536,12 +544,13 @@ bno_err_t bno_parser::parse_frs_write_response(bno_frs_write_response_t& dest, u
     return bno_err_t::OK;
 }
 
-bno_err_t bno_parser::parse_frs_read_response(bno_frs_read_response_t& dest, uint8_t report_length) {
+bno_err_t bno_parser::parse_frs_read_response(bno_frs_read_response_t& dest) {
 
     namespace offset = bno_constants::data_offset::config::frs_read;
     namespace status = bno_constants::frs::read_status;
+    namespace size   = bno_constants::control_type::packet_size;
 
-    if(_rx_packet->size < report_length)
+    if(!valid_packet_size(size::FRS_READ_RESPONSE))
         return bno_err_t::SH2_INVALID_REPORT_LENGTH;
     
     const uint8_t* data = _rx_packet->data;
@@ -606,7 +615,7 @@ bno_err_t bno_parser::parse_command_response() {
     switch (commandID)
     {
     case command::INITIALIZE.id:
-        sc = parse_command_initialize(_storage->command.initialized, command::INITIALIZE.report_length);
+        sc = parse_command_initialize(_storage->command.initialized);
         break;
     case command::TARE.id:
         // This one does not send a response
@@ -621,13 +630,13 @@ bno_err_t bno_parser::parse_command_response() {
         // This one does not send a response
         break;
     case command::ME_CALIBRATION.id:
-        sc = parse_command_me_calibration_response(_storage->command.me_calibration, command::ME_CALIBRATION.report_length);
+        sc = parse_command_me_calibration_response(_storage->command.me_calibration);
         break;
     case command::OSCILLATOR.id:
-        sc = parse_command_get_oscillator_type_response(_storage->command.oscillator, command::OSCILLATOR.report_length);
+        sc = parse_command_get_oscillator_type_response(_storage->command.oscillator);
         break;
     case command::SAVE_DCD.id:
-        sc = parse_command_save_dcd(_storage->command.save_dcd, command::SAVE_DCD.report_length);
+        sc = parse_command_save_dcd(_storage->command.save_dcd);
         break;
     default:
         sc = bno_err_t::SH2_INVALID_COMMAND_ID;
@@ -645,11 +654,12 @@ void bno_parser::parse_command_metadata(command_metadata_t& dest) {
     dest.response_sequence_number = _rx_packet->data[offset::R_RESPONSE_SEQUENCE_NUMBER];
 }
 
-bno_err_t bno_parser::parse_command_initialize(command_initialized_t& dest, uint8_t report_length) {
+bno_err_t bno_parser::parse_command_initialize(command_initialized_t& dest) {
     
-    namespace offset = bno_constants::data_offset::config::command::initialized;
+    namespace offset  = bno_constants::data_offset::config::command::initialized;
+    namespace command = bno_constants::command;
 
-    if(_rx_packet->size < report_length)
+    if(!valid_packet_size(command::INITIALIZE.report_length))
         return bno_err_t::SH2_INVALID_REPORT_LENGTH;
 
     _data_access->sensor_config().set_mask_and_lock(bno_constants::bitmask_config::COMMAND_INITIALIZED);
@@ -660,11 +670,12 @@ bno_err_t bno_parser::parse_command_initialize(command_initialized_t& dest, uint
     return bno_err_t::OK;
 }
 
-bno_err_t bno_parser::parse_command_me_calibration_response(command_me_calibration_config_t& dest, uint8_t report_length) {
+bno_err_t bno_parser::parse_command_me_calibration_response(command_me_calibration_config_t& dest) {
 
-    namespace offset = bno_constants::data_offset::config::command::me_calibration;
+    namespace offset  = bno_constants::data_offset::config::command::me_calibration;
+    namespace command = bno_constants::command;
 
-    if(_rx_packet->size < report_length)
+    if(!valid_packet_size(command::ME_CALIBRATION.report_length))
         return bno_err_t::SH2_INVALID_REPORT_LENGTH;
 
     _data_access->sensor_config().set_mask_and_lock(bno_constants::bitmask_config::COMMAND_ME_CALIBRATION_RESPONSE);
@@ -682,11 +693,12 @@ bno_err_t bno_parser::parse_command_me_calibration_response(command_me_calibrati
     return bno_err_t::OK;
 }
 
-bno_err_t bno_parser::parse_command_get_oscillator_type_response(command_oscillator_typte_t& dest, uint8_t report_length) {
+bno_err_t bno_parser::parse_command_get_oscillator_type_response(command_oscillator_typte_t& dest) {
 
-    namespace offset = bno_constants::data_offset::config::command::oscillator;
+    namespace offset  = bno_constants::data_offset::config::command::oscillator;
+    namespace command = bno_constants::command;
 
-    if(_rx_packet->size < report_length)
+    if(!valid_packet_size(command::OSCILLATOR.report_length))
         return bno_err_t::SH2_INVALID_REPORT_LENGTH;
 
     _data_access->sensor_config().set_mask_and_lock(bno_constants::bitmask_config::COMMAND_OSCILLATOR_TYPE_RESPONSE);
@@ -697,11 +709,12 @@ bno_err_t bno_parser::parse_command_get_oscillator_type_response(command_oscilla
     return bno_err_t::OK;
 }
 
-bno_err_t bno_parser::parse_command_save_dcd(command_save_dcd_t& dest, uint8_t report_length) {
+bno_err_t bno_parser::parse_command_save_dcd(command_save_dcd_t& dest) {
 
-    namespace offset = bno_constants::data_offset::config::command::save_dcd;
+    namespace offset  = bno_constants::data_offset::config::command::save_dcd;
+    namespace command = bno_constants::command;
 
-    if(_rx_packet->size < report_length)
+    if(!valid_packet_size(command::SAVE_DCD.report_length))
         return bno_err_t::SH2_INVALID_REPORT_LENGTH;
 
     _data_access->sensor_config().set_mask_and_lock(bno_constants::bitmask_config::COMMAND_SAVE_DCD);
