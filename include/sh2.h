@@ -80,6 +80,16 @@ class SH2 {
 
         bno_err_t finish_frs_write();
 
+        /**
+         * @brief Estimates the length of the next packet, so that the header does not have to be read
+         * @param current_len The length of the current packet
+         * @param prev_len The length of the previous packet
+         * @param current_estimate The estimated length. An output of `0` means no valid estimation is available
+         * @param tracked_estimate The estimated length that is currently being tracked. Used for internal calculations
+         * @param count A counter that is used to determine if the estimation is valid
+         */
+        void calc_estimated_packet_length(size_t current_len, size_t prev_len, size_t& current_estimate, size_t& tracked_estimate, int16_t& count);
+
     public: 
 
 ~SH2();
@@ -301,6 +311,5 @@ void clear_sensor_data_mask(uint64_t mask)
 {
     _data_access.sensor_data().clear_mask(mask);
 }
-
 
 };

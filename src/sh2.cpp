@@ -20,36 +20,108 @@ void SH2::task_packet_read_wrapper(void* arg) {
 
 void SH2::task_packet_read() {
 
-    size_t message_size    = 0;
-    size_t remaining_bytes = 0;
-    bno_err_t err;
+    enum class read_state : uint8_t {
+        NO_ACTIVE_READ,
+        ONGOING_READ,
+        FINISHED_READ
+    };
+
+    read_state state = read_state::NO_ACTIVE_READ; 
+
+    size_t  packet_length     = 0;
+    size_t  estimated_length  = 0;
+
+    size_t  previous_length   = 0;
+    size_t  tracked_length    = 0;
+    int16_t same_length_count = 0;
+
+    size_t  remaining_bytes   = 0;
+    size_t  bytes_in_buffer   = 0;
+
+    bno_err_t sc;
 
     while(true) {
 
         ulTaskNotifyTake(pdTRUE, portMAX_DELAY);
 
-        if(message_size == 0) {
+        switch (state)
+        {
+        case read_state::NO_ACTIVE_READ:
+            
+            state = read_state::ONGOING_READ;
 
-            message_size = _shtp->shtp_get_packet_length(_rx_packet);
-            continue;
-        }
+            if(estimated_length != 0) {
+
+                packet_length = estimated_length;
+                [[fallthrough]];
+            }
+            else {
+
+                sc = _shtp->shtp_read_header_get_packet_length(_rx_packet, packet_length);
+                if(sc != bno_err_t::OK)
+                    state = read_state::NO_ACTIVE_READ;
+                break;
+            }
         
-        if(remaining_bytes == 0) {
-            err = _shtp->shtp_read_packet(_rx_packet, message_size, remaining_bytes);
-        }
-        else {
-            err = _shtp->shtp_read_remaining_packet(_rx_packet, remaining_bytes, remaining_bytes);
-        }
+        case read_state::ONGOING_READ:
 
-        if(remaining_bytes > 0)
-            continue;
+            if(remaining_bytes == 0)
+                sc = _shtp->shtp_read_packet(_rx_packet, packet_length, bytes_in_buffer, remaining_bytes);
+            else 
+                sc = _shtp->shtp_read_packet(_rx_packet, remaining_bytes, bytes_in_buffer, remaining_bytes);
 
-        if(err != bno_err_t::SHTP_READ_FAILED) {
+            if(remaining_bytes == 0 || sc == bno_err_t::SHTP_READ_FAILED)
+                state = read_state::FINISHED_READ;
+            else
+                break;
 
+            [[fallthrough]];
+
+        case read_state::FINISHED_READ:
+
+            state = read_state::NO_ACTIVE_READ;
+
+            // Reset the packet reading variables
+            packet_length   = 0;
+            bytes_in_buffer = 0;
+
+            if(sc == bno_err_t::SHTP_READ_FAILED)
+                break;
+
+            calc_estimated_packet_length(_rx_packet.size, previous_length, estimated_length, tracked_length, same_length_count);
+            
+            previous_length = _rx_packet.size;
+            // Parse the actual packet
             _parser.parse(&_rx_packet);
         }
-        message_size = 0;
     }
+}
+
+void SH2::calc_estimated_packet_length(size_t current_len, size_t prev_len, size_t& current_estimate, size_t& tracked_estimate, int16_t& count) {
+
+    namespace bno = bno_constants::driver_config;
+    
+    // This part counts up for matches and down for deviations
+    if(count == 0)
+        tracked_estimate = 0;
+    
+    if(tracked_estimate == 0 && current_len == prev_len)
+        tracked_estimate = current_len;
+
+    if(tracked_estimate == current_len) {
+        if(count < bno::LENGTH_PREDICTION_COUNTER_LIMIT)
+            count++;
+    }
+    else {
+        if(count > 0)
+            count--;
+    }
+
+    // This part sets the current estimate based on the count and the tracked estimate
+    if(count >= bno::LENGTH_PREDICTION_ESTIMATION_THRESHOLD)
+        current_estimate = tracked_estimate;
+    else
+        current_estimate = 0;
 }
 
 SH2::~SH2() {

@@ -28,11 +28,13 @@ namespace bno_constants
 
     namespace driver_config
     {
-        static constexpr uint32_t     READ_TASK_STACK_SIZE = 4096;
-        static constexpr UBaseType_t  READ_TASK_PRIORITY   =    3;
-        static constexpr uint8_t      BNO_SENSOR_UNDEFINED =    0;
-        static constexpr uint8_t      FRS_READ_BUFFER_SIZE =   64;  // Words
-        static constexpr TickType_t   BNO_TICKS_TO_TIMEOUT =  pdMS_TO_TICKS(100);
+        static constexpr uint32_t     READ_TASK_STACK_SIZE                   = 4096;
+        static constexpr UBaseType_t  READ_TASK_PRIORITY                     = 3;
+        static constexpr uint8_t      BNO_SENSOR_UNDEFINED                   = 0;
+        static constexpr uint8_t      FRS_READ_BUFFER_SIZE                   = 64;  // 32 bit Words
+        static constexpr TickType_t   BNO_TICKS_TO_TIMEOUT                   = pdMS_TO_TICKS(100);
+        static constexpr int          LENGTH_PREDICTION_COUNTER_LIMIT        = 5; // Counter goes up to this value when packets of equal length arrive
+        static constexpr int          LENGTH_PREDICTION_ESTIMATION_THRESHOLD = 3; // The predicted packet length will be used for all reads when this threshold is reached
     }
 
     namespace i2c 
