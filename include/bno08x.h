@@ -33,6 +33,8 @@ class BNO08x {
 
         uint16_t compute_change_sensitivity(uint8_t sensor_id, float change_sensitivity);
 
+        bno_err_t set_sensor(const bno_sensor_config_t& config);
+
 public:
 
 
@@ -329,7 +331,7 @@ inline void config_sensor_id(bno_sensor_config_t& config, bno_sensor_id_t id)
  */
 inline void config_sensor_frequency(bno_sensor_config_t& config, uint16_t frequency_hz) 
 {
-    config.report_interval = frequency_hz ? 1000000UL / frequency_hz : 0;;
+    config.report_interval = frequency_hz ? 1000000UL / frequency_hz : 0;
 }
 
 

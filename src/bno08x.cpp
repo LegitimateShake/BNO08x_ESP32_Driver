@@ -178,77 +178,52 @@ uint16_t BNO08x::compute_change_sensitivity(uint8_t sensor_id, float change_sens
         return uint32_t(int32_t(change_sensitivity / sf));
 }
 
-bno_err_t BNO08x::enable_sensor(const bno_sensor_config_t& config) {
+bno_err_t BNO08x::set_sensor(const bno_sensor_config_t& config) {
 
-    namespace sensor = bno_constants::sensor;
+    bno_sensor_config_t base_sensor = config;
     bno_err_t sc = bno_err_t::OK;
 
     if(config.sensor_id == bno_constants::driver_config::BNO_SENSOR_UNDEFINED)
         return bno_err_t::BNO_INVALID_SENSOR_ID;
 
-    uint8_t base_sensor_id = bno_constants::driver_config::BNO_SENSOR_UNDEFINED;
-
     switch(config.sensor_id)
     {
-    case sensor::RAW_ACCELEROMETER.id:
-        base_sensor_id = sensor::ACCELEROMETER.id;
+    case bno_constants::sensor::RAW_ACCELEROMETER.id:
+
+        config_sensor_id(base_sensor, bno_sensor_id_t::ACCELEROMETER);
+        sc = _SH2.set_feature_command(base_sensor);
         break;
-    case sensor::RAW_GYROSCOPE.id:
-        base_sensor_id = sensor::GYROSCOPE.id;
+
+    case bno_constants::sensor::RAW_GYROSCOPE.id:
+
+        config_sensor_id(base_sensor, bno_sensor_id_t::GYROSCOPE);
+        sc = _SH2.set_feature_command(base_sensor);
         break;
-    case sensor::RAW_MAGNETOMETER.id:
-        base_sensor_id = sensor::MAGNETIC_FIELD.id;
+
+    case bno_constants::sensor::RAW_MAGNETOMETER.id:
+
+        config_sensor_id(base_sensor, bno_sensor_id_t::MAGNETIC_FIELD);
+        sc = _SH2.set_feature_command(base_sensor);
         break;
     }
 
-    if(base_sensor_id != bno_constants::driver_config::BNO_SENSOR_UNDEFINED) {
+    if(sc != bno_err_t::OK)
+        return sc;
 
-        bno_sensor_config_t base_sensor_config;
-
-        base_sensor_config.sensor_id = base_sensor_id;
-        base_sensor_config.report_interval = config.report_interval;
-
-        sc = _SH2.set_feature_command(base_sensor_config);
-        if(sc != bno_err_t::OK)
-            return sc;
-    }
     return _SH2.set_feature_command(config);
+}
+
+bno_err_t BNO08x::enable_sensor(const bno_sensor_config_t& config) {
+
+    return set_sensor(config);
 }
 
 bno_err_t BNO08x::disable_sensor(const bno_sensor_config_t& config) {
 
-    namespace sensor = bno_constants::sensor;
-    bno_err_t sc = bno_err_t::OK;
     bno_sensor_config_t disable_config = config;
-    disable_config.report_interval = 0;
+    config_sensor_frequency(disable_config, 0);
 
-    uint8_t base_sensor_id = bno_constants::driver_config::BNO_SENSOR_UNDEFINED;
-
-    switch(disable_config.sensor_id)
-    {
-    case sensor::RAW_ACCELEROMETER.id:
-        base_sensor_id = sensor::ACCELEROMETER.id;
-        break;
-    case sensor::RAW_GYROSCOPE.id:
-        base_sensor_id = sensor::GYROSCOPE.id;
-        break;
-    case sensor::RAW_MAGNETOMETER.id:
-        base_sensor_id = sensor::MAGNETIC_FIELD.id;
-        break;
-    }
-
-    if(base_sensor_id != bno_constants::driver_config::BNO_SENSOR_UNDEFINED) {
-
-        disable_config.sensor_id = base_sensor_id;
-        
-        sc = _SH2.set_feature_command(disable_config);
-        if(sc != bno_err_t::OK)
-            return sc;
-        
-        disable_config.sensor_id = config.sensor_id;
-    }
-
-    return _SH2.set_feature_command(disable_config);
+    return set_sensor(disable_config);
 }
 
 bno_err_t BNO08x::read_product_id(bno_product_id_t& dest, TickType_t ticks_to_timeout) {

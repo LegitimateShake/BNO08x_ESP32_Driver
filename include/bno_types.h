@@ -38,6 +38,7 @@ enum class bno_err_t : uint16_t {
     BNO_INVALID_SENSOR_ID                 = 500,
     BNO_TIMEOUT                           = 501,
     BNO_ME_CONFIGURATION_ERROR            = 502,
+    BNO_NO_VALID_SENSOR_RESPONSE          = 503,
     FRS_RECORD_EMPTY                      = 600,
     FRS_NO_DATA_RECEIVED                  = 601,
     FRS_TRANSFER_ONGOING                  = 602,
@@ -501,7 +502,6 @@ struct bno_data_t {
     bno_sensor_data_t        sensor;
     bno_config_data_t        config;
     bno_frs_data_t           frs;
-    bno_sensor_config_t      sensor_data;
 };
 
 class scoped_mutex_lock {

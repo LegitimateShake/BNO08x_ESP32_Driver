@@ -28,8 +28,8 @@ void SH2::task_packet_read() {
 
     read_state state = read_state::NO_ACTIVE_READ; 
 
-    size_t  packet_length     = 0;
-    size_t  estimated_length  = 0;
+    size_t  estimated_length  = bno_constants::driver_config::DEFAULT_PACKET_LENGTH_PREDICTION;
+    size_t  packet_length     = bno_constants::driver_config::DEFAULT_PACKET_LENGTH_PREDICTION;
 
     size_t  previous_length   = 0;
     size_t  tracked_length    = 0;
@@ -121,7 +121,7 @@ void SH2::calc_estimated_packet_length(size_t current_len, size_t prev_len, size
     if(count >= bno::LENGTH_PREDICTION_ESTIMATION_THRESHOLD)
         current_estimate = tracked_estimate;
     else
-        current_estimate = 0;
+        current_estimate = bno::DEFAULT_PACKET_LENGTH_PREDICTION;
 }
 
 SH2::~SH2() {

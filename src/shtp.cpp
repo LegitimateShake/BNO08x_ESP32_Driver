@@ -140,7 +140,7 @@ bno_err_t shtp::shtp_read_packet(shtp_packet_t& rxPacket, size_t bytes_to_read, 
 
     size_t _packet_size  = (uint16_t)_i2c_rx_buffer[1] << 8 | _i2c_rx_buffer[0];
            _packet_size &= ~(1 << 15); // Bit is set if the packet is part of a previous transfer
-
+    
     if(_packet_size < BNO::SHTP_HEADER_SIZE)
         return bno_err_t::SHTP_READ_FAILED;
     
