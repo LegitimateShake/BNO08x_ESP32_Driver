@@ -29,6 +29,8 @@ class BNO08x {
 
         bno_err_t frs_set_sensor_orientation(uint16_t frs_type, float w, float x, float y, float z);
 
+        bno_err_t frs_configure_ar_vr_stabilization(uint16_t frs_type, float scaling, float max_rotation, float max_error, float stability_magnitude);
+
         bno_err_t wait_for_init_packages();
 
         uint16_t compute_change_sensitivity(uint8_t sensor_id, float change_sensitivity);
@@ -174,6 +176,18 @@ bno_err_t frs_set_motion_engine_time_source(bno_time_source_t time_source);
 
 
 /**
+ * @brief Configures the maximum fusion period allowed. 
+ * @brief If a fusion period larger than this maximum is requested then the fusion period will be set to this maximum.
+ * @param fusion_period_us The maximum fusion period in microsecods
+ * @return bno_err_t status code. `bno_err_t::OK` on success
+ */
+bno_err_t frs_set_max_fusion_period(uint32_t fusion_period_us = 0)
+{
+    return _SH2.write_frs_record(bno_constants::frs::config::MAX_FUSION_PERIOD, &fusion_period_us, 1);
+}
+
+
+/**
  * @brief Sets the rotation of the MotionEngine output coordinate system relative to the sensor’s coordinate system.
  * @brief This quaternion orientation will be applied to the quaternion outputs of the sensor
  * @param w, x, y, z Quaterion orientation
@@ -229,6 +243,53 @@ inline bno_err_t frs_set_gyroscope_orientation(float w = 0.0f, float x = 0.0f, f
 inline bno_err_t frs_set_magnetometer_orientation(float w = 0.0f, float x = 0.0f, float y = 0.0f, float z = 0.0f)
 {
     return frs_set_sensor_orientation(bno_constants::frs::config::MAG_ORIENTATION, w, x, y, z);
+}
+
+
+/**
+ * @brief Configures the stability detector 
+ * @param acceleration_threshold The acceleration in m/s^2 that must be exceeded to trigger not stable.
+ * @param duration The duration in microseconds that acceleration must remain below the acceleration threshold in order to declare that the device is stable.
+ * @return bno_err_t status code. `bno_err_t::OK` on success
+ */
+bno_err_t frs_configure_stability_detector(float acceleration_threshold = 0.784, uint32_t duration = 500'000);
+
+
+/**
+ * @brief The AR/VR stabilization records control the thresholds MotionEngine uses to stabilize angular position.
+ * @param scaling Scaling controls what fraction of the angular velocity can be used to correct angular position errors. 
+ *                The range for this parameter is 0 to 1.0. 
+ *                A typical value is 0.2.
+ * @param max_rotation The maximum amount of angular correction that can be used to correct angular position errors.The range is 0 to PI. Units are radiants.
+ * @param max_error The maximum angular error allowed to accumulate before the angular position output is updated in a single step. 
+ *                  The range is 0 to PI. Units are radiants. 
+ *                  A typical value is 45 degrees or 0.785 radians.
+ * @param stability_magnitude The amount of change in angular position that must occur before the angular position output is updated with a new value.
+ *                            Units are radiants. A typical value is 0.0 degrees or 0.0 radians.
+ * @return bno_err_t status code. `bno_err_t::OK` on success
+ */
+inline bno_err_t frs_configure_ar_vr_stabilized_rotation_vector(float scaling = 0.0f, float max_rotation = 0.0f, float max_error = 0.0f, float stability_magnitude = 0.0f)
+{
+    return frs_configure_ar_vr_stabilization(bno_constants::frs::config::AR_VR_STABILIZATION_ROTATION_VECTOR, scaling, max_rotation, max_error, stability_magnitude);
+}
+
+
+/**
+ * @brief The AR/VR stabilization records control the thresholds MotionEngine uses to stabilize angular position.
+ * @param scaling Scaling controls what fraction of the angular velocity can be used to correct angular position errors. 
+ *                The range for this parameter is 0 to 1.0. 
+ *                A typical value is 0.2.
+ * @param max_rotation The maximum amount of angular correction that can be used to correct angular position errors.The range is 0 to PI. Units are radiants.
+ * @param max_error The maximum angular error allowed to accumulate before the angular position output is updated in a single step. 
+ *                  The range is 0 to PI. Units are radiants. 
+ *                  A typical value is 45 degrees or 0.785 radians.
+ * @param stability_magnitude The amount of change in angular position that must occur before the angular position output is updated with a new value.
+ *                            Units are radiants. A typical value is 0.0 degrees or 0.0 radians.
+ * @return bno_err_t status code. `bno_err_t::OK` on success
+ */
+inline bno_err_t frs_configure_ar_vr_stabilized_game_rotation_vector(float scaling = 0.0f, float max_rotation = 0.0f, float max_error = 0.0f, float stability_magnitude = 0.0f)
+{
+    return frs_configure_ar_vr_stabilization(bno_constants::frs::config::AR_VR_STABILIZATION_GAME_ROTATION_VECTOR, scaling, max_rotation, max_error, stability_magnitude);
 }
 
 

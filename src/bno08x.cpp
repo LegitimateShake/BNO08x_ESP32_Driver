@@ -586,6 +586,36 @@ bno_err_t BNO08x::frs_set_sensor_orientation(uint16_t frs_type, float w, float x
     words[3] = uint32_t(int32_t(w / sf::FRS_SENSOR_ORIENTATION));
     
     return _SH2.write_frs_record(frs_type, words, 4);
+}
 
+bno_err_t BNO08x::frs_configure_stability_detector(float acceleration_threshold, uint32_t duration) {
 
+    namespace sf = bno_constants::scale_factor;
+    uint32_t words[2] = {0};
+
+    words[0] = uint32_t(int32_t(acceleration_threshold / sf::STABILITY_DETECTOR_ACCEL_THRESHOLD));
+    words[1] = duration;
+    
+    return _SH2.write_frs_record(bno_constants::frs::config::STABILITY_DETECTOR, words, 2);
+}
+
+bno_err_t BNO08x::frs_configure_ar_vr_stabilization(uint16_t frs_type, float scaling, float max_rotation, float max_error, float stability_magnitude) {
+
+    namespace sf = bno_constants::scale_factor;
+    namespace limit = bno_constants::frs::ar_vr_stabilization_range;
+    uint32_t words[4] = {0};
+
+    if(scaling      < limit::MIN_VAL_SCALING      || scaling      > limit::MAX_VAL_SCALING      ||
+       max_rotation < limit::MIN_VAL_MAX_ROTATION || max_rotation > limit::MAX_VAL_MAX_ROTATION ||
+       max_error    < limit::MIN_VAL_MAX_ERROR    || max_error    > limit::MAX_VAL_MAX_ERROR    ){
+        
+        return bno_err_t::INVALID_INPUT;
+    }
+
+    words[0] = uint32_t(scaling             / sf::FRS_AR_VR_STABILIZATION_SCALING);
+    words[1] = uint32_t(max_rotation        / sf::FRS_AR_VR_STABILIZATION_MAX_ROTATION);
+    words[2] = uint32_t(max_error           / sf::FRS_AR_VR_STABILIZATION_MAX_ERROR);
+    words[3] = uint32_t(stability_magnitude / sf::FRS_AR_VR_STABILIZATION_STABILITY_MAGNITUDE);
+
+    return _SH2.write_frs_record(frs_type, words, 4);
 }

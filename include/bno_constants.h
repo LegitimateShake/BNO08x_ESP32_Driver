@@ -149,41 +149,41 @@ namespace bno_constants
     {
         namespace config
         {   
-            static constexpr uint16_t STATIC_CALIBRATION_AGM                              = 0x7979;
-            static constexpr uint16_t NOMINAL_CALIBRATION_AGM                             = 0x4D4D;
-            static constexpr uint16_t STATIC_CALIBRATION_SRA                              = 0x8A8A;
-            static constexpr uint16_t NOMINAL_CALIBRATION_SRA                             = 0x4E4E;
-            static constexpr uint16_t DYNAMIC_CALIBRATION                                 = 0x1F1F;
-            static constexpr uint16_t MOTION_ENGINE_POWER_MANAGEMENT_STABILITY_CLASSIFIER = 0xD3E2;
-            static constexpr uint16_t SYSTEM_ORIENTATION                                  = 0x2D3E;
-            static constexpr uint16_t PRIMARY_ACCEL_ORIENTATION                           = 0x2D41;
-            static constexpr uint16_t SCREEN_ROTATION_ACCEL_ORIENTATION                   = 0x2D43;
-            static constexpr uint16_t GYRO_ORIENTATION                                    = 0x2D46;
-            static constexpr uint16_t MAG_ORIENTATION                                     = 0x2D4C;
-            static constexpr uint16_t AR_VR_STABILIZATION_ROTATION_VECTOR                 = 0x3E2D;
+            static constexpr uint16_t STATIC_CALIBRATION_AGM                              = 0x7979;  // Poprietary
+            static constexpr uint16_t NOMINAL_CALIBRATION_AGM                             = 0x4D4D;  // Poprietary
+            static constexpr uint16_t STATIC_CALIBRATION_SRA                              = 0x8A8A;  // Poprietary
+            static constexpr uint16_t NOMINAL_CALIBRATION_SRA                             = 0x4E4E;  // Poprietary
+            static constexpr uint16_t DYNAMIC_CALIBRATION                                 = 0x1F1F;  // Poprietary
+            static constexpr uint16_t MOTION_ENGINE_POWER_MANAGEMENT_STABILITY_CLASSIFIER = 0xD3E2;  // Implemented
+            static constexpr uint16_t SYSTEM_ORIENTATION                                  = 0x2D3E;  // Implemented
+            static constexpr uint16_t PRIMARY_ACCEL_ORIENTATION                           = 0x2D41;  // Implemented
+            static constexpr uint16_t SCREEN_ROTATION_ACCEL_ORIENTATION                   = 0x2D43;  // Implemented
+            static constexpr uint16_t GYRO_ORIENTATION                                    = 0x2D46;  // Implemented
+            static constexpr uint16_t MAG_ORIENTATION                                     = 0x2D4C;  // Implemented
+            static constexpr uint16_t AR_VR_STABILIZATION_ROTATION_VECTOR                 = 0x3E2D;  
             static constexpr uint16_t AR_VR_STABILIZATION_GAME_ROTATION_VECTOR            = 0x3E2E;
-            static constexpr uint16_t SIGNIFICANT_MOTION_DETECTOR                         = 0xC274;
+            static constexpr uint16_t SIGNIFICANT_MOTION_DETECTOR                         = 0xC274;  // Implemented
             static constexpr uint16_t SHAKE_DETECTOR                                      = 0x7D7D;
-            static constexpr uint16_t MAX_FUSION_PERIOD                                   = 0xD7D7;
-            static constexpr uint16_t SERIAL_NUMBER                                       = 0x4B4B;
-            static constexpr uint16_t ENV_SENSOR_PRESSURE_CALIBRATION                     = 0x39AF;
-            static constexpr uint16_t ENV_SENSOR_TEMPERATURE_CALIBRATION                  = 0x4D20;
-            static constexpr uint16_t ENV_SENSOR_HUMIDITY_CALIBRATION                     = 0x1AC9;
+            static constexpr uint16_t MAX_FUSION_PERIOD                                   = 0xD7D7;  // Implemented
+            static constexpr uint16_t SERIAL_NUMBER                                       = 0x4B4B;  // Implemented
+            static constexpr uint16_t ENV_SENSOR_PRESSURE_CALIBRATION                     = 0x39AF;  // Implemented
+            static constexpr uint16_t ENV_SENSOR_TEMPERATURE_CALIBRATION                  = 0x4D20;  // Implemented
+            static constexpr uint16_t ENV_SENSOR_HUMIDITY_CALIBRATION                     = 0x1AC9;  // Implemented
             static constexpr uint16_t PICKUP_DETECTOR                                     = 0x1B2A;
             static constexpr uint16_t FLIP_DETECTOR                                       = 0xFC94;
-            static constexpr uint16_t STABILITY_DETECTOR                                  = 0xED85;
-            static constexpr uint16_t ACTIVITY_TRACKER                                    = 0xED88;
+            static constexpr uint16_t STABILITY_DETECTOR                                  = 0xED85;  // Implemented
+            static constexpr uint16_t ACTIVITY_TRACKER                                    = 0xED88;  // Poprietary
             static constexpr uint16_t SLEEP_DETECTOR                                      = 0xED87;
             static constexpr uint16_t TILT_DETECTOR                                       = 0xED89;
             static constexpr uint16_t POCKET_DETECTOR                                     = 0xEF27;
             static constexpr uint16_t CIRCLE_DETECTOR                                     = 0xEE51;
-            static constexpr uint16_t USER_RECORD                                         = 0x74B4;
-            static constexpr uint16_t MOTION_ENGINE_TIME_SOURCE                           = 0xD403;
+            static constexpr uint16_t USER_RECORD                                         = 0x74B4;  // Implemented
+            static constexpr uint16_t MOTION_ENGINE_TIME_SOURCE                           = 0xD403;  // Implemented
             static constexpr uint16_t UART_OUTPUT_FORMAT                                  = 0xA1A1;
             static constexpr uint16_t GYRO_INTEGRATED_ROT_VEC                             = 0xA1A2;
-            static constexpr uint16_t FUSION_CONTROL_FLAGS                                = 0xA1A3;
-            static constexpr uint16_t SIMPLE_CALIBRATION                                  = 0xA1A4;
-            static constexpr uint16_t NOMINAL_SIMPLE_CALIBRATION                          = 0XA1A5;
+            static constexpr uint16_t FUSION_CONTROL_FLAGS                                = 0xA1A3;  // Implemented
+            static constexpr uint16_t SIMPLE_CALIBRATION                                  = 0xA1A4;  // Poprietary
+            static constexpr uint16_t NOMINAL_SIMPLE_CALIBRATION                          = 0XA1A5;  // Poprietary
         }
 
         namespace write_status
@@ -214,6 +214,16 @@ namespace bno_constants
             static constexpr uint8_t READ_RECORD_COMPLETED = 0x03;
             static constexpr uint8_t RECORD_EMPTY          = 0x05;
             static constexpr uint8_t DEVICE_ERROR          = 0x08;
+        }
+
+        namespace ar_vr_stabilization_range
+        {
+            static constexpr float MIN_VAL_SCALING      = 0.0;
+            static constexpr float MAX_VAL_SCALING      = 1.0;
+            static constexpr float MIN_VAL_MAX_ROTATION = 0.0;
+            static constexpr float MAX_VAL_MAX_ROTATION = 3.1416;
+            static constexpr float MIN_VAL_MAX_ERROR    = 0.0;
+            static constexpr float MAX_VAL_MAX_ERROR    = 3.1416;
         }
     }
 
@@ -277,7 +287,12 @@ namespace bno_constants
         static constexpr float STABILITY_CLASSIFIER_DELTA_ORIENTATION      = 1.0f / (1 << 28); // Q-Point = 28
         static constexpr float STABILITY_CLASSIFIER_STABLE_THRESHOLD       = 1.0f / (1 << 25); // Q-Point = 25
         static constexpr float SIGNIFICANT_MOTION_DETECTOR_ACCEL_THRESHOLD = 1.0f / (1 << 24); // Q-Point = 24
+        static constexpr float STABILITY_DETECTOR_ACCEL_THRESHOLD          = 1.0f / (1 << 24); // Q-Point = 24
         static constexpr float FRS_SENSOR_ORIENTATION                      = 1.0f / (1 << 30); // Q-Point = 30
+        static constexpr float FRS_AR_VR_STABILIZATION_SCALING             = 1.0f / (1 << 30); // Q-Point = 30
+        static constexpr float FRS_AR_VR_STABILIZATION_MAX_ROTATION        = 1.0f / (1 << 29); // Q-Point = 29
+        static constexpr float FRS_AR_VR_STABILIZATION_MAX_ERROR           = 1.0f / (1 << 29); // Q-Point = 29
+        static constexpr float FRS_AR_VR_STABILIZATION_STABILITY_MAGNITUDE = 1.0f / (1 << 29); // Q-Point = 29
     }
 
     namespace sensor
