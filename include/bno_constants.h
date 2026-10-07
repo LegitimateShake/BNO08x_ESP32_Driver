@@ -160,8 +160,8 @@ namespace bno_constants
             static constexpr uint16_t SCREEN_ROTATION_ACCEL_ORIENTATION                   = 0x2D43;  // Implemented
             static constexpr uint16_t GYRO_ORIENTATION                                    = 0x2D46;  // Implemented
             static constexpr uint16_t MAG_ORIENTATION                                     = 0x2D4C;  // Implemented
-            static constexpr uint16_t AR_VR_STABILIZATION_ROTATION_VECTOR                 = 0x3E2D;  
-            static constexpr uint16_t AR_VR_STABILIZATION_GAME_ROTATION_VECTOR            = 0x3E2E;
+            static constexpr uint16_t AR_VR_STABILIZATION_ROTATION_VECTOR                 = 0x3E2D;  // Implemented
+            static constexpr uint16_t AR_VR_STABILIZATION_GAME_ROTATION_VECTOR            = 0x3E2E;  // Implemented
             static constexpr uint16_t SIGNIFICANT_MOTION_DETECTOR                         = 0xC274;  // Implemented
             static constexpr uint16_t SHAKE_DETECTOR                                      = 0x7D7D;
             static constexpr uint16_t MAX_FUSION_PERIOD                                   = 0xD7D7;  // Implemented
@@ -293,6 +293,9 @@ namespace bno_constants
         static constexpr float FRS_AR_VR_STABILIZATION_MAX_ROTATION        = 1.0f / (1 << 29); // Q-Point = 29
         static constexpr float FRS_AR_VR_STABILIZATION_MAX_ERROR           = 1.0f / (1 << 29); // Q-Point = 29
         static constexpr float FRS_AR_VR_STABILIZATION_STABILITY_MAGNITUDE = 1.0f / (1 << 29); // Q-Point = 29
+        static constexpr float GYRO_ROT_VEC_MAX_ERROR                      = 1.0f / (1 << 29); // Q-Point = 29
+        static constexpr float GYRO_ROT_VEC_PREDICTION_AMOUNT              = 1.0f / (1 << 10); // Q-Point = 10
+        static constexpr float GYRO_ROT_VEC_ALPHA_BETA_GAMMA               = 1.0f / (1 << 20); // Q-Point = 20
     }
 
     namespace sensor

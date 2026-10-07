@@ -294,6 +294,14 @@ inline bno_err_t frs_configure_ar_vr_stabilized_game_rotation_vector(float scali
 
 
 /**
+ * @brief Configures the gyro integrated rotation vector
+ * @param config configuration struct. Default parameters of the struct contain the default configuration
+ * @return bno_err_t status code. `bno_err_t::OK` on success
+ */
+bno_err_t frs_configure_gyro_integrated_rotation_vector(gyro_rot_vec_config_t& config);
+
+
+/**
  * @brief Send a packet to the BNO08x, telling it to reset
  * @return bno_err_t status code. `bno_err_t::OK` on success
  */

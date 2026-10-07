@@ -84,11 +84,11 @@ void BNO08x::config_sensor_always_on(bno_sensor_config_t& config, bno_state_t al
         config.feature_flags &= ~mask::ALWAYS_ON_ENABLED;
 }
 
-void BNO08x::config_sensor_change_sensitivity(bno_sensor_config_t& config, bno_state_t change_sensitivity_enable, bno_state_t change_sensitivity_relative, float diff_to_event_trigger) {
+void BNO08x::config_sensor_change_sensitivity(bno_sensor_config_t& config, bno_state_t change_sensitivity, bno_state_t change_sensitivity_relative, float diff_to_event_trigger) {
 
     namespace mask = bno_constants::feature_flags;
 
-    if(change_sensitivity_enable == bno_state_t::ENABLE)
+    if(change_sensitivity == bno_state_t::ENABLE)
         config.feature_flags |=  mask::CHANGE_SENSITIVITY_ENABLED;
     else
         config.feature_flags &= ~mask::CHANGE_SENSITIVITY_ENABLED;
@@ -343,7 +343,7 @@ bno_err_t BNO08x::frs_configure_stability_classifier(float delta_orientation, fl
     uint32_t words[3] = {0};
 
     words[0] = uint32_t(int32_t(delta_orientation / sf::STABILITY_CLASSIFIER_DELTA_ORIENTATION));
-    words[1] = uint32_t(int32_t(stable_threshold / sf::STABILITY_CLASSIFIER_STABLE_THRESHOLD));
+    words[1] = uint32_t(int32_t(stable_threshold  / sf::STABILITY_CLASSIFIER_STABLE_THRESHOLD));
     words[2] = ((uint32_t)delta_acceleration) << 16 | (stable_duration);
     
     return _SH2.write_frs_record(bno_constants::frs::config::MOTION_ENGINE_POWER_MANAGEMENT_STABILITY_CLASSIFIER, words, 3);
@@ -618,4 +618,20 @@ bno_err_t BNO08x::frs_configure_ar_vr_stabilization(uint16_t frs_type, float sca
     words[3] = uint32_t(stability_magnitude / sf::FRS_AR_VR_STABILIZATION_STABILITY_MAGNITUDE);
 
     return _SH2.write_frs_record(frs_type, words, 4);
+}
+
+bno_err_t BNO08x::frs_configure_gyro_integrated_rotation_vector(gyro_rot_vec_config_t& config) {
+
+    namespace sf = bno_constants::scale_factor;
+    uint32_t words[7] = {0};
+
+    words[0] = uint32_t(config.reference_data);
+    words[1] = config.sync_interval_us;
+    words[2] = uint32_t(config.max_error         / sf::GYRO_ROT_VEC_MAX_ERROR);
+    words[3] = uint32_t(config.prediction_amount / sf::GYRO_ROT_VEC_PREDICTION_AMOUNT);
+    words[4] = uint32_t(config.alpha             / sf::GYRO_ROT_VEC_ALPHA_BETA_GAMMA);
+    words[5] = uint32_t(config.beta              / sf::GYRO_ROT_VEC_ALPHA_BETA_GAMMA);
+    words[6] = uint32_t(config.gamma             / sf::GYRO_ROT_VEC_ALPHA_BETA_GAMMA);
+
+    return _SH2.write_frs_record(bno_constants::frs::config::GYRO_INTEGRATED_ROT_VEC, words, 7);
 }
