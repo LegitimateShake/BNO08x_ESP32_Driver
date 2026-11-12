@@ -238,8 +238,8 @@ struct sensor_metadata_t {
 
     bno_sensor_accuracy_t accuracy    = bno_sensor_accuracy_t::UNKNOWN;
     uint8_t sequence_number           = 0;
-    uint16_t data_delay               = 0;    
-    int32_t  base_timestamp_reference = 0;
+    uint16_t data_delay               = 0; // In 100us ticks 
+    int32_t  base_timestamp_reference = 0; // In 100us ticks
 };
 
 
@@ -338,6 +338,14 @@ struct step_counter_t {
     sensor_metadata_t metadata;
     uint16_t steps = 0;
     uint32_t detect_latency_us = 0;
+};
+
+struct shake_detector_t {
+
+    sensor_metadata_t metadata;
+    uint8_t x = 0;
+    uint8_t y = 0;
+    uint8_t z = 0;
 };
 
 struct tap_detector_t {
@@ -462,6 +470,7 @@ struct bno_sensor_data_t {
     step_counter_t step_counter;
     step_counter_t step_detector;
     tap_detector_t tap_counter;
+    shake_detector_t shake_detector;
 
     quaternion_t rotation_vector;
     quaternion_t game_rotation_vector;

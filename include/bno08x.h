@@ -2,6 +2,7 @@
 
 #include <cstdint>
 #include <cmath>
+#include <string>
 #include <freertos/FreeRTOS.h>
 #include <freertos/task.h>
 #include <freertos/semphr.h>
@@ -210,6 +211,7 @@ inline bno_err_t frs_set_primary_accelerometer_orientation(float w = 0.0f, float
 {
     return frs_set_sensor_orientation(bno_constants::frs::config::PRIMARY_ACCEL_ORIENTATION, w, x, y, z);
 }
+
 
 /**
  * @brief Set a reorientation for the screen rotation accelerometer output.
@@ -488,6 +490,14 @@ bno_err_t set_reorientation(float w, float x, float y, float z);
 
 
 /**
+ * @brief Outputs the report metadata over the serial interface
+ * @param metadata The data that should be printed
+ * @return None
+ */
+void print_metadata(sensor_metadata_t& metadata);
+
+
+/**
  * @brief Read rotation vector data from the sensor
  * @param dest Reference to a struct that should be filled with the sensor data
  * @param ticks_to_timeout Amount of ticks the function waits for a packet before the read is aborted
@@ -753,6 +763,18 @@ inline bno_err_t read_step_counter(step_counter_t& dest, TickType_t ticks_to_tim
 inline bno_err_t read_step_detector(step_counter_t& dest, TickType_t ticks_to_timeout = portMAX_DELAY)
 {
     return _SH2.get_sensor_data_packet(bno_constants::sensor::STEP_DETECTOR.id, _SH2.storage().sensor.step_detector, dest, ticks_to_timeout);
+}
+
+
+/**
+ * @brief The shake detector sends a report each time it detects a shake
+ * @param dest Reference to a struct that should be filled with the sensor data
+ * @param ticks_to_timeout Amount of ticks the function waits for a packet before the read is aborted
+ * @return bno_err_t status code. `bno_err_t::OK` on success 
+ */
+inline bno_err_t read_shake_detector(shake_detector_t& dest, TickType_t ticks_to_timeout = portMAX_DELAY)
+{
+    return _SH2.get_sensor_data_packet(bno_constants::sensor::SHAKE_DETECTOR.id, _SH2.storage().sensor.shake_detector, dest, ticks_to_timeout);
 }
 
 

@@ -109,5 +109,7 @@ class bno_parser {
 
             bno_err_t parse_step_detector(step_counter_t& dest);
 
+            bno_err_t parse_shake_detector(shake_detector_t& dest);
+
         bno_err_t parse_channel_gyro();
 };

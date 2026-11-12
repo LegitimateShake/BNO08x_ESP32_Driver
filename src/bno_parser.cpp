@@ -159,6 +159,7 @@ bno_err_t bno_parser::parse_channel_reports() {
         sc = parse_step_detector(_storage->sensor.step_detector);
         break;
     case sensor::SHAKE_DETECTOR.id:
+        sc = parse_shake_detector(_storage->sensor.shake_detector);
         break;
     case sensor::FLIP_DETECTOR.id:
         break;
@@ -402,6 +403,8 @@ bno_err_t bno_parser::parse_significant_motion_detector(significant_motion_detec
 
     _data_access->sensor_data().set_bit_and_lock(_rx_packet->data[offset::metadata::REPORT_ID]);
 
+    parse_report_metadata(dest.metadata);
+
     dest.significant_motion = bool(read_uint16_t(&_rx_packet->data[offset::generic::SENSOR_DATA_START]));
 
     return bno_err_t::OK;
@@ -416,6 +419,8 @@ bno_err_t bno_parser::parse_step_counter(step_counter_t& dest) {
         return bno_err_t::SH2_INVALID_REPORT_LENGTH;
 
     _data_access->sensor_data().set_bit_and_lock(_rx_packet->data[offset::metadata::REPORT_ID]);
+
+    parse_report_metadata(dest.metadata);
 
     dest.detect_latency_us = read_uint32_t(&_rx_packet->data[offset::step_counter::DETECT_LATENCY]);
     dest.steps             = read_uint16_t(&_rx_packet->data[offset::step_counter::STEP_AMOUNT]);
@@ -433,8 +438,31 @@ bno_err_t bno_parser::parse_step_detector(step_counter_t& dest) {
 
     _data_access->sensor_data().set_bit_and_lock(_rx_packet->data[offset::metadata::REPORT_ID]);
 
+    parse_report_metadata(dest.metadata);
+
     dest.detect_latency_us = read_uint32_t(&_rx_packet->data[offset::step_counter::DETECT_LATENCY]);
     dest.steps = 1;
+
+    return bno_err_t::OK;
+}
+
+bno_err_t bno_parser::parse_shake_detector(shake_detector_t& dest) {
+
+    namespace offset = bno_constants::data_offset::report;
+    namespace sensor = bno_constants::sensor;
+
+    if(!valid_packet_size(sensor::SHAKE_DETECTOR.report_length))
+        return bno_err_t::SH2_INVALID_REPORT_LENGTH;
+
+    _data_access->sensor_data().set_bit_and_lock(_rx_packet->data[offset::metadata::REPORT_ID]);
+
+    parse_report_metadata(dest.metadata);
+
+    uint16_t bitmap = read_uint16_t(&_rx_packet->data[offset::generic::SENSOR_DATA_START]); 
+
+    dest.x = (bitmap & 0b001) != 0x00;
+    dest.y = (bitmap & 0b010) != 0x00;
+    dest.z = (bitmap & 0b100) != 0x00;
 
     return bno_err_t::OK;
 }
