@@ -655,6 +655,8 @@ void BNO08x::print_metadata(const char *sensor, sensor_metadata_t& metadata) {
     static constexpr char medium[]     = "2 (Medium)";
     static constexpr char high[]       = "3 (High)";
 
+    int64_t now = esp_timer_get_time();
+
     const char* accuracy_state = unreliable;
     
     switch (metadata.accuracy)
@@ -672,15 +674,28 @@ void BNO08x::print_metadata(const char *sensor, sensor_metadata_t& metadata) {
         break;
     }
 
-    ESP_LOGI(TAG, "| %-47.47s |", separator);
-    ESP_LOGI(TAG, "%-30s %-18s %1s", "| Metadata field", "Value", "|");
-    ESP_LOGI(TAG, "| %-47.47s |", separator);
+    ESP_LOGI(TAG, "| %-49.49s |", 
+        separator);
+    ESP_LOGI(TAG, "| %-30s %-18s |", 
+        "Metadata field", "Value", "|");
+    ESP_LOGI(TAG, "| %-49.49s |", 
+        separator);
 
-    ESP_LOGI(TAG, "%-30s %-18.18s %1s", "| Sensor", sensor, "|");
-    ESP_LOGI(TAG, "%-30s %-18d %1s", "| Sequence number"         , metadata.sequence_number, "|");
-    ESP_LOGI(TAG, "%-30s %-18s %1s", "| Accuracy"                , accuracy_state, "|");
-    ESP_LOGI(TAG, "%-30s %-18s %1s", "| Base timestamp reference", (std::to_string(metadata.base_timestamp_reference / 10.0f) + " ms").c_str(), "|");
-    ESP_LOGI(TAG, "%-30s %-18s %1s", "| Data delay"              , (std::to_string(metadata.data_delay / 10.0f) + " ms").c_str(), "|");
+    ESP_LOGI(TAG, "| %-30s %-18.18s |", 
+        "Sensor", sensor);
+    ESP_LOGI(TAG, "| %-30s %-18d |", 
+        "Sequence number" , metadata.sequence_number);
+    ESP_LOGI(TAG, "| %-30s %-18s |", 
+        "Accuracy", accuracy_state);
+    ESP_LOGI(TAG, "| %-30s %-18s |",
+        "Timestamp", (std::to_string(metadata.timestamp_us) + " us").c_str());
+    ESP_LOGI(TAG, "| %-30s %-18s |",
+        "Time since sampling", (std::to_string(now - metadata.timestamp_us) + " us").c_str());
+    ESP_LOGI(TAG, "| %-30s %-18s |",
+        "Base timestamp reference", 
+        (std::to_string(metadata.base_timestamp_reference / 10.0f) + " ms").c_str());
+    ESP_LOGI(TAG, "| %-30s %-18s |", 
+        "Data delay", (std::to_string(metadata.data_delay / 10.0f) + " ms").c_str());
 
-    ESP_LOGI(TAG, "| %-47.47s |", separator);
+    ESP_LOGI(TAG, "| %-49.49s |", separator);
 }

@@ -5,6 +5,9 @@ void IRAM_ATTR SH2::ISR_BNO086_event(void* arg) {
     SH2* sh2_instance = static_cast<SH2*>(arg);
     BaseType_t xHigherPriorityTaskWoken = pdFALSE; 
 
+    //Store the timestamp of the interrupt for later computation
+    sh2_instance->_data.timestamp_isr_us = esp_timer_get_time();
+
     //Wakes the task that is reading data from the BNO086
     vTaskNotifyGiveFromISR(sh2_instance->_bno_read_task_handle, &xHigherPriorityTaskWoken);
 

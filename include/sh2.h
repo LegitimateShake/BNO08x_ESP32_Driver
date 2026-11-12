@@ -5,6 +5,7 @@
 #include <freertos/FreeRTOS.h> 
 #include <freertos/semphr.h>
 #include <driver/gpio.h>
+#include <esp_timer.h>
 #include <esp_log.h>
 
 #include <bno_types.h>
@@ -35,6 +36,7 @@ class SH2 {
 
         gpio_num_t _int_pin;
         gpio_num_t _rst_pin;
+
         bool _initialized = false;
 
         /**

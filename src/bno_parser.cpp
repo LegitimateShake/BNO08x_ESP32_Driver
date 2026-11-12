@@ -227,6 +227,8 @@ void bno_parser::parse_report_metadata(sensor_metadata_t& dest) {
     dest.sequence_number = data[offset::SEQUENCE_NUMBER];
     dest.accuracy        = (bno_sensor_accuracy_t)(data[offset::ACCURACY_STATUS] & 0x03);
     dest.data_delay      = uint16_t(data[offset::ACCURACY_STATUS] & 0xFC) << 6 | data[offset::REPORT_DELAY];
+
+    dest.timestamp_us    = _storage->timestamp_isr_us - ((dest.base_timestamp_reference - (int32_t)dest.data_delay) * 100);
 }
 
 bno_err_t bno_parser::parse_env_sensor(env_sensor_t& dest, uint8_t report_length, uint8_t data_bytes, float scale_factor) {

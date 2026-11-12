@@ -236,10 +236,11 @@ struct shtp_packet_t {
 
 struct sensor_metadata_t {
 
-    bno_sensor_accuracy_t accuracy    = bno_sensor_accuracy_t::UNKNOWN;
-    uint8_t sequence_number           = 0;
-    uint16_t data_delay               = 0; // In 100us ticks 
+    bno_sensor_accuracy_t accuracy = bno_sensor_accuracy_t::UNKNOWN;
+    uint8_t  sequence_number = 0;
+    uint16_t data_delay = 0; // In 100us ticks 
     int32_t  base_timestamp_reference = 0; // In 100us ticks
+    int64_t  timestamp_us = 0; // Timestamp of the ESP on which the data was recorded by the BNO08x
 };
 
 
@@ -528,6 +529,8 @@ struct bno_data_t {
     bno_sensor_data_t        sensor;
     bno_config_data_t        config;
     bno_frs_data_t           frs;
+
+    volatile int64_t timestamp_isr_us = 0;
 };
 
 class scoped_mutex_lock {
