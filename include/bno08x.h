@@ -491,10 +491,11 @@ bno_err_t set_reorientation(float w, float x, float y, float z);
 
 /**
  * @brief Outputs the report metadata over the serial interface
+ * @param sensor Identifier for which sensor the report belongs to 
  * @param metadata The data that should be printed
  * @return None
  */
-void print_metadata(sensor_metadata_t& metadata);
+void print_metadata(const char *sensor, sensor_metadata_t& metadata);
 
 
 /**
